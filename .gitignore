@@ -235,6 +235,10 @@ data/
 *.zip
 *.gz
 
+# EXCEPT configuration files
+!config/*.json
+!config/*.yaml
+
 # --- IDEs ---
 .vscode/
 .idea/
