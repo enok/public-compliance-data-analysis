@@ -1,0 +1,69 @@
+{
+  "api_base_url": "https://apisidra.ibge.gov.br/values",
+  "datasets": [
+    {
+      "name": "pop_2010",
+      "table_id": "1378",
+      "period": "all",
+      "variable": "allxp",
+      "classifications": "c1/0/c2/0/c287/0/c455/0",
+      "filename": "census_2010_pop.json"
+    },
+    {
+      "name": "pop_2022",
+      "table_id": "4714",
+      "period": "all",
+      "variable": "93",
+      "classifications": "",
+      "filename": "census_2022_pop.json"
+    },
+    {
+      "name": "sanitation_2010",
+      "table_id": "3216",
+      "period": "all",
+      "variable": "96",
+      "classifications": "c1/0/c125/0/c63/0/c299/0/c300/0",
+      "filename": "census_2010_sanitation.json"
+    },
+    {
+      "name": "sanitation_2022",
+      "table_id": "9848",
+      "period": "last 1",
+      "variable": "381",
+      "classifications": "c125/0/c301/72053/c1817/72125/c11558/46292/c67/10972/c2661/0",
+      "filename": "census_2022_sanitation.json"
+    },
+    {
+      "name": "literacy_2010",
+      "table_id": "3540",
+      "period": "all",
+      "variable": "allxp",
+      "classifications": "c1568/0/c1/0/c2/0/c86/0/c58/0",
+      "filename": "census_2010_literacy.json"
+    },
+    {
+      "name": "literacy_2022",
+      "table_id": "9543",
+      "period": "all",
+      "variable": "all",
+      "classifications": "c2/0/c86/0/c287/0",
+      "filename": "census_2022_literacy.json"
+    },
+    {
+      "name": "income_2010",
+      "table_id": "3549",
+      "period": "all",
+      "variable": "841",
+      "classifications": "c1/6795/c2/6794/c12056/99565/c58/95253",
+      "filename": "census_2010_income.json"
+    },
+    {
+      "name": "income_2022",
+      "table_id": "10295",
+      "period": "all",
+      "variable": "13604",
+      "classifications": "c2/0/c86/0/c58/0",
+      "filename": "census_2022_income.json"
+    }
+  ]
+}

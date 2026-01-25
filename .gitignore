@@ -243,3 +243,12 @@ data/
 .vscode/
 .idea/
 .DS_Store
+
+# Ignore all of .idea ...
+.idea/*
+# ... EXCEPT for these shared project files
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/misc.xml
+!.idea/deployment.xml
+!*.iml
