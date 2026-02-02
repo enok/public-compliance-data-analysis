@@ -1,0 +1,209 @@
+{
+  "api_base_url": "https://api.portaldatransparencia.gov.br/api-de-dados",
+  "rate_limit": {
+    "requests_per_minute": 300,
+    "delay_between_requests": 0.2
+  },
+  "pagination": {
+    "max_pages": 1000,
+    "page_size": 500
+  },
+  "datasets": [
+    {
+      "name": "federal_transfers_2010",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2010",
+        "mesAnoFim": "12/2010",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2010.json",
+      "description": "Baseline year - aligns with Census 2010"
+    },
+    {
+      "name": "federal_transfers_2011",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2011",
+        "mesAnoFim": "12/2011",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2011.json",
+      "description": "Year 1 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2012",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2012",
+        "mesAnoFim": "12/2012",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2012.json",
+      "description": "Year 2 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2013",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2013",
+        "mesAnoFim": "12/2013",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2013.json",
+      "description": "Year 3 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2014",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2014",
+        "mesAnoFim": "12/2014",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2014.json",
+      "description": "Year 4 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2015",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2015",
+        "mesAnoFim": "12/2015",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2015.json",
+      "description": "Year 5 post-baseline - mid-period"
+    },
+    {
+      "name": "federal_transfers_2016",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2016",
+        "mesAnoFim": "12/2016",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2016.json",
+      "description": "Year 6 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2017",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2017",
+        "mesAnoFim": "12/2017",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2017.json",
+      "description": "Year 7 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2018",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2018",
+        "mesAnoFim": "12/2018",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2018.json",
+      "description": "Year 8 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2019",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2019",
+        "mesAnoFim": "12/2019",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2019.json",
+      "description": "Year 9 post-baseline"
+    },
+    {
+      "name": "federal_transfers_2020",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2020",
+        "mesAnoFim": "12/2020",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2020.json",
+      "description": "Year 10 post-baseline - COVID-19 pandemic"
+    },
+    {
+      "name": "federal_transfers_2021",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2021",
+        "mesAnoFim": "12/2021",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2021.json",
+      "description": "Year 11 post-baseline - pandemic recovery"
+    },
+    {
+      "name": "federal_transfers_2022",
+      "endpoint": "/despesas/recursos-recebidos",
+      "params": {
+        "mesAnoInicio": "01/2022",
+        "mesAnoFim": "12/2022",
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "federal_transfers_2022.json",
+      "description": "Outcome year - aligns with Census 2022"
+    },
+    {
+      "name": "ceis_sanctions",
+      "endpoint": "/ceis",
+      "params": {
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "ceis_compliance.json",
+      "description": "CGU Register of Ineligible and Suspended Companies (CEIS)"
+    },
+    {
+      "name": "cnep_sanctions",
+      "endpoint": "/cnep",
+      "params": {
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "cnep_compliance.json",
+      "description": "National Registry of Punished Companies (CNEP)"
+    },
+    {
+      "name": "ceaf_sanctions",
+      "endpoint": "/ceaf",
+      "params": {
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "ceaf_compliance.json",
+      "description": "Registry of Expelled Federal Agents (CEAF)"
+    },
+    {
+      "name": "cepim_sanctions",
+      "endpoint": "/cepim",
+      "params": {
+        "pagina": 1
+      },
+      "requires_pagination": true,
+      "filename": "cepim_compliance.json",
+      "description": "Registry of Impediment to Contract with Public Administration (CEPIM)"
+    }
+  ]
+}

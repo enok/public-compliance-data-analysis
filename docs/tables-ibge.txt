@@ -1,0 +1,229 @@
+--------------------------------------------------------------------------------------------------------
+
+Censo 2010
+
+Universo
+	4 - Características da População e dos Domicílios
+
+Amostra
+	13 - Educação e Deslocamento
+	14 - Trabalho e Rendimento
+
+
+Item	Pilar			Número do Texto na Tela		Seção no SIDRA		URL
+-----------------------------------------------------------------------------
+A		População		4							Universo			https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/universo-caracteristicas-da-populacao-e-dos-domicilios
+B		Saneamento		4							Universo			https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/universo-caracteristicas-da-populacao-e-dos-domicilios
+C		Alfabetização	13							Amostra				https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/amostra-educacao-e-deslocamento
+D		Rendimento		14							Amostra				https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/amostra-trabalho-e-rendimento
+
+--------------------------------------------------------------------------------------------------------
+
+Censo 2022
+
+Primeiros Resultados do Universo
+	2 - População e Domicílios
+
+Resultados preliminares da Amostra
+	10 - Trabalho e Rendimento
+
+Resultados do Universo
+	15 - Características dos Domicílios
+	23 - Alfabetização
+
+
+Item	Pilar			Número do Texto na Tela		O que ele contém
+-----------------------------------------------------------------------------
+E		População		2							Base de habitantes por município	https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/primeiros-resultados-populacao-e-domicilios
+F		Saneamento		15							Esgoto, água e lixo					https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-indigenas-alfabetizacao-registros-de-nascimentos-e-domicilios
+G		Alfabetização	23							Taxas de educação básica			https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-alfabetizacao
+H		Rendimento		10							Renda média e faixas salariais		https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/amostra-trabalho-e-rendimento
+
+--------------------------------------------------------------------------------------------------------
+
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item A (2010 - População)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/universo-caracteristicas-da-populacao-e-dos-domicilios
+
+
+	Características Gerais da População
+
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+1378	População residente, por situação do domicílio, sexo e idade, segundo a condição no domicílio e compartilhamento da responsabilidade pelo domicílio	2010	BR, GR, UF, ME, MI, MU, DT, SD, BA, RM, RS, RD, AU, AJ
+https://sidra.ibge.gov.br/tabela/1378
+https://apisidra.ibge.gov.br/values/t/1378/n6/all/v/allxp/p/all/c1/0/c2/0/c287/0/c455/0?formato=json
+
+
+	Cor ou Raça
+
+Número	Nome	Período	Território
+3175	População residente, por cor ou raça, segundo a situação do domicílio, o sexo e a idade	2010	BR, GR, UF, ME, MI, MU, DT, SD, BA, RM, RS, RD, AU, AJ
+https://sidra.ibge.gov.br/tabela/3175
+https://apisidra.ibge.gov.br/values/t/3175/n6/all/v/allxp/p/all/c86/0/c1/0/c2/0/c287/0?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item B (2010 - Saneamento)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/universo-caracteristicas-da-populacao-e-dos-domicilios
+
+
+	Domicílios
+
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+3216	Domicílios particulares permanentes e Moradores em domicílios particulares permanentes, por situação do domicílio, segundo o tipo do domicílio, a condição de ocupação, a existência de banheiro ou sanitário e esgotamento sanitário e a existência e número de banheiros de uso exclusivo do domicílio	2010	BR, GR, UF, ME, MI, MU, DT, SD, BA, RM, RS, RD, AU, AJ
+https://sidra.ibge.gov.br/tabela/3216
+https://apisidra.ibge.gov.br/values/t/3216/n6/all/v/96/p/all/c1/0/c125/0/c63/0/c299/0/c300/0?formato=json
+
+
+3217	Domicílios particulares permanentes e Moradores em domicílios particulares permanentes, por situação do domicílio, segundo a forma de abastecimento de água, o destino do lixo e a existência de energia elétrica	2010	BR, GR, UF, ME, MI, MU, DT, SD, BA, RM, RS, RD, AU, AJ
+https://sidra.ibge.gov.br/tabela/3217
+https://apisidra.ibge.gov.br/values/t/3217/n6/all/v/96/p/all/c1/0/c61/0/c67/0/c309/0?formato=json
+
+
+3218	Domicílios particulares permanentes, por forma de abastecimento de água, segundo a existência de banheiro ou sanitário e esgotamento sanitário, o destino do lixo e a existência de energia elétrica	2010	BR, GR, UF, ME, MI, MU, DT, SD, BA, RM, RS, RD, AU, AJ
+https://sidra.ibge.gov.br/tabela/3218
+https://apisidra.ibge.gov.br/values/t/3218/n6/all/v/allxp/p/all/c61/0/c299/0/c67/0/c309/0?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item C (2010 - Alfabetização)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/amostra-educacao-e-deslocamento
+
+
+Educação:
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+3540	Pessoas de 10 anos ou mais de idade, por nível de instrução, segundo a situação do domicílio, o sexo, a cor ou raça e os grupos de idade	2010	BR, GR, UF, ME, MI, MU, RM, RS, RD, AU
+https://sidra.ibge.gov.br/tabela/3540
+https://apisidra.ibge.gov.br/values/t/3540/n6/all/v/allxp/p/all/c1568/0/c1/0/c2/0/c86/0/c58/0/d/v140%200?formato=json
+
+
+3547	Pessoas de 25 anos ou mais de idade, por sexo e nível de instrução	2010	BR, GR, UF, ME, MI, MU, RM, RS, RD, AU
+https://sidra.ibge.gov.br/tabela/3547
+https://apisidra.ibge.gov.br/values/t/3547/n6/all/v/allxp/p/all/c2/0/c1568/0/d/v1643%200?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item D (2010 - Rendimento)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2010/amostra-trabalho-e-rendimento
+
+
+Rendimento:
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+3549	Pessoas de 10 anos ou mais de idade com rendimento, Valor do rendimento nominal médio mensal e mediano mensal, das pessoas de 10 anos ou mais de idade, com rendimento, segundo a situação do domicílio, o sexo, a condição de atividade na semana de referência e os grupos de idade	2010	BR, GR, UF, ME, MI, MU, RM, RS, RD
+https://sidra.ibge.gov.br/tabela/3549
+https://apisidra.ibge.gov.br/values/t/3549/n6/all/v/841/p/all/c1/6795/c2/6794/c12056/99565/c58/95253/d/v841%200?formato=json
+
+
+3563	Domicílios particulares permanentes, Valor do rendimento nominal médio mensal per capita e mediano mensal per capita dos domicílios particulares permanentes, segundo a situação do domicílio e as classes de rendimento nominal mensal domiciliar	2010	BR, GR, UF, ME, MI, MU, RM, RS, RD
+https://sidra.ibge.gov.br/tabela/3563
+https://apisidra.ibge.gov.br/values/t/3563/n6/all/v/96/p/all/c1/6795/c386/9680/d/v96%200?formato=json
+
+
+3571	Domicílios particulares permanentes, por classes de rendimento nominal mensal domiciliar - Amostra Rendimento	2010	BR, GR, UF, ME, MI, MU, RM, RS, RD, AU
+https://sidra.ibge.gov.br/tabela/3571
+https://apisidra.ibge.gov.br/values/t/3571/n6/all/v/allxp/p/all/c12065/0/d/v96%200?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item E (2022 - População)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/primeiros-resultados-populacao-e-domicilios
+
+
+População
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+4714	População Residente, Área territorial e Densidade demográfica	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/4714
+https://apisidra.ibge.gov.br/values/t/4714/n6/all/v/93/p/all?formato=json
+
+
+Domicílios
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+4711	Domicílios recenseados, por espécie	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/4711
+https://apisidra.ibge.gov.br/values/t/4711/n6/all/v/allxp/p/all/c3/59993?formato=json
+
+
+4712	Domicílios particulares permanentes ocupados, Moradores em domicílios particulares permanentes ocupados e Média de moradores em domicílios particulares permanentes ocupados	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/4712
+https://apisidra.ibge.gov.br/values/t/4712/n6/all/v/381/p/all?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item F (2022 - Saneamento)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-indigenas-alfabetizacao-registros-de-nascimentos-e-domicilios
+
+
+Domicílios
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+9848	Domicílios particulares permanentes ocupados, total e com pelo menos um morador indígena, e moradores, total e indígenas, em domicílios particulares permanentes ocupados, por tipo de domicílio, principal forma de abastecimento de água, existência de canalização de água, tipo de esgotamento sanitário, destino do lixo e localização do domicílio	2022	BR, GR, UF, MU, AM, AF
+https://sidra.ibge.gov.br/tabela/9848
+https://apisidra.ibge.gov.br/values/t/9848/n6/all/v/381/p/last%201/c125/0/c301/72053/c1817/72125/c11558/46292/c67/10972/c2661/0?formato=json
+
+
+9860	Domicílios particulares permanentes ocupados, total e com pelo menos um morador indígena, e moradores, total e indígenas, em domicílios particulares permanentes ocupados, por tipo de domicílio, existência de ligação à rede geral de distribuição de água e principal forma de abastecimento de água, existência de canalização de água, existência de banheiro ou sanitário e número de banheiros de uso exclusivo do domicílio, tipo de esgotamento sanitário e localização do domicílio	2022	BR, GR, UF, MU, AM, AF
+https://sidra.ibge.gov.br/tabela/9860
+https://apisidra.ibge.gov.br/values/t/9860/n6/all/v/381/p/last%201/c125/2932/c1821/72129/c1817/72125/c458/72117/c11558/46292/c2661/32776?formato=json
+https://apisidra.ibge.gov.br/values/t/9860/n6/all/v/381/p/last%201/c125/0/c1821/72129/c1817/72125/c458/0/c11558/46292/c2661/0?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item G (2022 - Alfabetização)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-alfabetizacao
+
+
+Educação
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+9542	Pessoas de 15 anos ou mais de idade, total e as alfabetizadas, por sexo, cor ou raça e grupos de idade	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/9542
+https://apisidra.ibge.gov.br/values/t/9542/n6/all/v/allxp/p/all/c59/0/c2/0/c86/0/c287/0?formato=json
+
+
+9543	Taxa de alfabetização das pessoas de 15 anos ou mais de idade por sexo, cor ou raça e grupos de idade	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/9543
+https://apisidra.ibge.gov.br/values/t/9543/n6/all/v/all/p/all/c2/0/c86/0/c287/0/d/v2513%202?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Item H (2022 - Rendimento)
+https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/amostra-trabalho-e-rendimento
+
+
+Rendimento
+Número	Nome	Período	Território
+-----------------------------------------------------------------------------
+10289	Massa de rendimento nominal mensal de todos os trabalhos, Valor do rendimento nominal mensal médio e mediano de todos os trabalhos das pessoas de 14 anos ou mais de idade, ocupadas na semana de referência, com rendimento de trabalho, por sexo e cor ou raça	2022	BR, GR, UF, CU, MU
+https://sidra.ibge.gov.br/tabela/10289
+https://apisidra.ibge.gov.br/values/t/10289/n6/all/v/13424/p/all/c2/0/c86/0/d/v13424%202?formato=json
+
+
+10295	Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a), valor do rendimento domiciliar mensal per capita, médio e mediano, por sexo, cor ou raça e grupos de idade	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/10295
+https://apisidra.ibge.gov.br/values/t/10295/n6/all/v/13604/p/all/c2/0/c86/0/c58/0?formato=json
+
+
+10296	Moradores em domicílios particulares permanentes ocupados, exclusive os cuja condição no domicílio era pensionista, empregado(a) doméstico(a) ou parente do(a) empregado(a) doméstico(a), por sexo, cor ou raça e classes de rendimento domiciliar per capita em salários mínimos	2022	BR, GR, UF, IN, IM, CU, MU
+https://sidra.ibge.gov.br/tabela/10296
+https://apisidra.ibge.gov.br/values/t/10296/n6/all/v/allxp/p/all/c2/0/c86/0/c386/0?formato=json
+
+
+-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+
