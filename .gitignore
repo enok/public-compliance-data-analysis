@@ -213,6 +213,7 @@ __marimo__/
 
 # --- Cloud Infrastructure (Terraform) ---
 .terraform/
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
 *.tfvars
