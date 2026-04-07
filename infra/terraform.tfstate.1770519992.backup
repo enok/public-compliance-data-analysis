@@ -1,0 +1,2199 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.3",
+  "serial": 118,
+  "lineage": "d8635eb2-cbf4-7e0a-3e67-d574bdd5d762",
+  "outputs": {
+    "datalake_bucket_arn": {
+      "value": "arn:aws:s3:::enok-mba-thesis-datalake",
+      "type": "string"
+    },
+    "datalake_bucket_name": {
+      "value": "enok-mba-thesis-datalake",
+      "type": "string"
+    },
+    "deployment_summary": {
+      "value": {
+        "airflow_environment": "mba-thesis-airflow-dev",
+        "airflow_version": "2.8.1",
+        "datalake_bucket": "enok-mba-thesis-datalake",
+        "environment": "dev",
+        "environment_class": "mw1.small",
+        "mwaa_bucket": "enok-mba-thesis-datalake-mwaa",
+        "region": "us-east-1",
+        "secrets_manager": "mba-thesis/transparency-api-key-dev"
+      },
+      "type": [
+        "object",
+        {
+          "airflow_environment": "string",
+          "airflow_version": "string",
+          "datalake_bucket": "string",
+          "environment": "string",
+          "environment_class": "string",
+          "mwaa_bucket": "string",
+          "region": "string",
+          "secrets_manager": "string"
+        }
+      ]
+    },
+    "mwaa_bucket_arn": {
+      "value": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa",
+      "type": "string"
+    },
+    "mwaa_bucket_name": {
+      "value": "enok-mba-thesis-datalake-mwaa",
+      "type": "string"
+    },
+    "mwaa_environment_name": {
+      "value": "mba-thesis-airflow-dev",
+      "type": "string"
+    },
+    "mwaa_execution_role_arn": {
+      "value": "arn:aws:iam::236510206723:role/mwaa-execution-role-dev",
+      "type": "string"
+    },
+    "nat_gateway_ids": {
+      "value": [
+        "nat-06b3cf33ac49dc9be",
+        "nat-07df277e95560ee55"
+      ],
+      "type": [
+        "tuple",
+        [
+          "string",
+          "string"
+        ]
+      ]
+    },
+    "private_subnet_ids": {
+      "value": [
+        "subnet-0ef827699abf702e4",
+        "subnet-0ebf3a558ad86d19f"
+      ],
+      "type": [
+        "tuple",
+        [
+          "string",
+          "string"
+        ]
+      ]
+    },
+    "public_subnet_ids": {
+      "value": [
+        "subnet-0ce0842acbad321d3",
+        "subnet-03631b35f4edcc179"
+      ],
+      "type": [
+        "tuple",
+        [
+          "string",
+          "string"
+        ]
+      ]
+    },
+    "secrets_manager_secret_arn": {
+      "value": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+      "type": "string"
+    },
+    "secrets_manager_secret_name": {
+      "value": "mba-thesis/transparency-api-key-dev",
+      "type": "string"
+    },
+    "security_group_id": {
+      "value": "sg-0aee570e2eb3f56e3",
+      "type": "string"
+    },
+    "vpc_id": {
+      "value": "vpc-0a0a6ee4a55c8691b",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "mwaa_nat_eip_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address": null,
+            "allocation_id": "eipalloc-061303a5812186fbf",
+            "arn": "arn:aws:ec2:us-east-1:236510206723:elastic-ip/eipalloc-061303a5812186fbf",
+            "associate_with_private_ip": null,
+            "association_id": "eipassoc-0126163fc6f76ae9a",
+            "carrier_ip": "",
+            "customer_owned_ip": "",
+            "customer_owned_ipv4_pool": "",
+            "domain": "vpc",
+            "id": "eipalloc-061303a5812186fbf",
+            "instance": "",
+            "ipam_pool_id": null,
+            "network_border_group": "us-east-1",
+            "network_interface": "eni-0ef9dee316ad268e1",
+            "private_dns": "ip-10-0-1-188.ec2.internal",
+            "private_ip": "10.0.1.188",
+            "ptr_record": "",
+            "public_dns": "ec2-44-219-153-33.compute-1.amazonaws.com",
+            "public_ip": "44.219.153.33",
+            "public_ipv4_pool": "amazon",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway EIP 1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway EIP 1"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxODAwMDAwMDAwMDAsInJlYWQiOjkwMDAwMDAwMDAwMCwidXBkYXRlIjozMDAwMDAwMDAwMDB9fQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "mwaa_nat_eip_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address": null,
+            "allocation_id": "eipalloc-0f93b6c4a5e49a3d3",
+            "arn": "arn:aws:ec2:us-east-1:236510206723:elastic-ip/eipalloc-0f93b6c4a5e49a3d3",
+            "associate_with_private_ip": null,
+            "association_id": "eipassoc-0ff5cff7d9a09812b",
+            "carrier_ip": "",
+            "customer_owned_ip": "",
+            "customer_owned_ipv4_pool": "",
+            "domain": "vpc",
+            "id": "eipalloc-0f93b6c4a5e49a3d3",
+            "instance": "",
+            "ipam_pool_id": null,
+            "network_border_group": "us-east-1",
+            "network_interface": "eni-07286bb44eec47ba4",
+            "private_dns": "ip-10-0-2-213.ec2.internal",
+            "private_ip": "10.0.2.213",
+            "ptr_record": "",
+            "public_dns": "ec2-100-50-46-52.compute-1.amazonaws.com",
+            "public_ip": "100.50.46.52",
+            "public_ipv4_pool": "amazon",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway EIP 2"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway EIP 2"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxODAwMDAwMDAwMDAsInJlYWQiOjkwMDAwMDAwMDAwMCwidXBkYXRlIjozMDAwMDAwMDAwMDB9fQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "mwaa_execution_role",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::236510206723:role/mwaa-execution-role-dev",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"airflow.amazonaws.com\",\"airflow-env.amazonaws.com\"]}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-02-03T23:20:10Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "mwaa-execution-role-dev",
+            "inline_policy": [
+              {
+                "name": "mwaa-env-policy",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"airflow:PublishMetrics\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:airflow:us-east-1:*:environment/*\"},{\"Action\":[\"ec2:DescribeNetworkInterfaces\",\"ec2:CreateNetworkInterface\",\"ec2:DeleteNetworkInterface\",\"ec2:DescribeSubnets\",\"ec2:DescribeSecurityGroups\",\"ec2:DescribeVpcs\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}"
+              },
+              {
+                "name": "mwaa-logs-policy",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:DescribeLogGroups\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:logs:us-east-1:*:log-group:airflow-*\"}]}"
+              },
+              {
+                "name": "mwaa-s3-policy",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\",\"s3:PutObject\",\"s3:DeleteObject\",\"s3:ListBucket\",\"s3:GetBucketLocation\",\"s3:GetBucketPublicAccessBlock\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::enok-mba-thesis-datalake-mwaa\",\"arn:aws:s3:::enok-mba-thesis-datalake-mwaa/*\",\"arn:aws:s3:::enok-mba-thesis-datalake\",\"arn:aws:s3:::enok-mba-thesis-datalake/*\"]},{\"Action\":[\"s3:GetAccountPublicAccessBlock\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}"
+              },
+              {
+                "name": "mwaa-secrets-policy",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"secretsmanager:GetSecretValue\",\"secretsmanager:DescribeSecret\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0\"}]}"
+              }
+            ],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "mwaa-execution-role-dev",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Execution Role"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Execution Role"
+            },
+            "unique_id": "AROATOEI3LMB666G2YRYN"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "name": "mwaa-execution-role-dev"
+          },
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "mwaa_env_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "mwaa-execution-role-dev:mwaa-env-policy",
+            "name": "mwaa-env-policy",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"airflow:PublishMetrics\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:airflow:us-east-1:*:environment/*\"},{\"Action\":[\"ec2:DescribeNetworkInterfaces\",\"ec2:CreateNetworkInterface\",\"ec2:DeleteNetworkInterface\",\"ec2:DescribeSubnets\",\"ec2:DescribeSecurityGroups\",\"ec2:DescribeVpcs\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+            "role": "mwaa-execution-role-dev"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "name": "mwaa-env-policy",
+            "role": "mwaa-execution-role-dev"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.mwaa_execution_role"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "mwaa_logs_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "mwaa-execution-role-dev:mwaa-logs-policy",
+            "name": "mwaa-logs-policy",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"logs:DescribeLogGroups\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:logs:us-east-1:*:log-group:airflow-*\"}]}",
+            "role": "mwaa-execution-role-dev"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "name": "mwaa-logs-policy",
+            "role": "mwaa-execution-role-dev"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.mwaa_execution_role"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "mwaa_s3_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "mwaa-execution-role-dev:mwaa-s3-policy",
+            "name": "mwaa-s3-policy",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:GetObjectVersion\",\"s3:PutObject\",\"s3:DeleteObject\",\"s3:ListBucket\",\"s3:GetBucketLocation\",\"s3:GetBucketPublicAccessBlock\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::enok-mba-thesis-datalake-mwaa\",\"arn:aws:s3:::enok-mba-thesis-datalake-mwaa/*\",\"arn:aws:s3:::enok-mba-thesis-datalake\",\"arn:aws:s3:::enok-mba-thesis-datalake/*\"]},{\"Action\":[\"s3:GetAccountPublicAccessBlock\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+            "role": "mwaa-execution-role-dev"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "name": "mwaa-s3-policy",
+            "role": "mwaa-execution-role-dev"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.mwaa_execution_role",
+            "aws_s3_bucket.mba_datalake",
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "mwaa_secrets_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "mwaa-execution-role-dev:mwaa-secrets-policy",
+            "name": "mwaa-secrets-policy",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"secretsmanager:GetSecretValue\",\"secretsmanager:DescribeSecret\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0\"}]}",
+            "role": "mwaa-execution-role-dev"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "name": "mwaa-secrets-policy",
+            "role": "mwaa-execution-role-dev"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.mwaa_execution_role",
+            "aws_secretsmanager_secret.transparency_api_key"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "mwaa_igw",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:internet-gateway/igw-032114a03399c2f0c",
+            "id": "igw-032114a03399c2f0c",
+            "owner_id": "236510206723",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Internet Gateway"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Internet Gateway"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_mwaa_environment",
+      "name": "mba_thesis_airflow",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "status": "tainted",
+          "schema_version": 0,
+          "attributes": {
+            "airflow_configuration_options": {
+              "core.default_timezone": "UTC",
+              "core.load_examples": "False",
+              "scheduler.catchup_by_default": "False",
+              "secrets.backend": "airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend",
+              "secrets.backend_kwargs": "{\"connections_prefix\":\"mba-thesis\",\"variables_prefix\":\"mba-thesis\"}",
+              "webserver.expose_config": "True"
+            },
+            "airflow_version": "2.8.1",
+            "arn": null,
+            "created_at": null,
+            "dag_s3_path": "dags/",
+            "database_vpc_endpoint_service": null,
+            "endpoint_management": null,
+            "environment_class": "mw1.small",
+            "execution_role_arn": "arn:aws:iam::236510206723:role/mwaa-execution-role-dev",
+            "id": "mba-thesis-airflow-dev",
+            "kms_key": null,
+            "last_updated": null,
+            "logging_configuration": [
+              {
+                "dag_processing_logs": [
+                  {
+                    "cloud_watch_log_group_arn": "",
+                    "enabled": true,
+                    "log_level": "INFO"
+                  }
+                ],
+                "scheduler_logs": [
+                  {
+                    "cloud_watch_log_group_arn": "",
+                    "enabled": true,
+                    "log_level": "INFO"
+                  }
+                ],
+                "task_logs": [
+                  {
+                    "cloud_watch_log_group_arn": "",
+                    "enabled": true,
+                    "log_level": "INFO"
+                  }
+                ],
+                "webserver_logs": [
+                  {
+                    "cloud_watch_log_group_arn": "",
+                    "enabled": true,
+                    "log_level": "INFO"
+                  }
+                ],
+                "worker_logs": [
+                  {
+                    "cloud_watch_log_group_arn": "",
+                    "enabled": true,
+                    "log_level": "INFO"
+                  }
+                ]
+              }
+            ],
+            "max_webservers": null,
+            "max_workers": null,
+            "min_webservers": null,
+            "min_workers": null,
+            "name": "mba-thesis-airflow-dev",
+            "network_configuration": [
+              {
+                "security_group_ids": [
+                  "sg-0aee570e2eb3f56e3"
+                ],
+                "subnet_ids": [
+                  "subnet-0ebf3a558ad86d19f",
+                  "subnet-0ef827699abf702e4"
+                ]
+              }
+            ],
+            "plugins_s3_object_version": null,
+            "plugins_s3_path": null,
+            "region": "us-east-1",
+            "requirements_s3_object_version": "h.yurbr8sxrA1qAaDWeLLz.cH0FuN1WF",
+            "requirements_s3_path": "requirements.txt",
+            "schedulers": null,
+            "service_role_arn": null,
+            "source_bucket_arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa",
+            "startup_script_s3_object_version": null,
+            "startup_script_s3_path": null,
+            "status": null,
+            "tags": {
+              "Environment": "dev",
+              "Name": "MBA Thesis Airflow",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MBA Thesis Airflow",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "timeouts": null,
+            "webserver_access_mode": "PUBLIC_ONLY",
+            "webserver_url": null,
+            "webserver_vpc_endpoint_service": null,
+            "weekly_maintenance_window_start": null,
+            "worker_replacement_strategy": null
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "airflow_configuration_options"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo3MjAwMDAwMDAwMDAwLCJkZWxldGUiOjU0MDAwMDAwMDAwMDAsInVwZGF0ZSI6NTQwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_iam_role.mwaa_execution_role",
+            "aws_iam_role_policy.mwaa_env_policy",
+            "aws_iam_role_policy.mwaa_logs_policy",
+            "aws_iam_role_policy.mwaa_s3_policy",
+            "aws_iam_role_policy.mwaa_secrets_policy",
+            "aws_s3_bucket.mba_datalake",
+            "aws_s3_bucket.mwaa_bucket",
+            "aws_s3_bucket_versioning.mwaa_versioning",
+            "aws_s3_object.requirements",
+            "aws_secretsmanager_secret.transparency_api_key",
+            "aws_secretsmanager_secret_version.transparency_api_key",
+            "aws_security_group.mwaa_sg",
+            "aws_subnet.mwaa_private_subnet_1",
+            "aws_subnet.mwaa_private_subnet_2",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_nat_gateway",
+      "name": "mwaa_nat_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allocation_id": "eipalloc-061303a5812186fbf",
+            "association_id": "eipassoc-0126163fc6f76ae9a",
+            "auto_provision_zones": null,
+            "auto_scaling_ips": null,
+            "availability_mode": "zonal",
+            "availability_zone_address": [],
+            "connectivity_type": "public",
+            "id": "nat-06b3cf33ac49dc9be",
+            "network_interface_id": "eni-0ef9dee316ad268e1",
+            "private_ip": "10.0.1.188",
+            "public_ip": "44.219.153.33",
+            "region": "us-east-1",
+            "regional_nat_gateway_address": [],
+            "regional_nat_gateway_auto_mode": null,
+            "route_table_id": null,
+            "secondary_allocation_ids": [],
+            "secondary_private_ip_address_count": 0,
+            "secondary_private_ip_addresses": [],
+            "subnet_id": "subnet-0ce0842acbad321d3",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway 1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway 1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTgwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_1",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_subnet.mwaa_public_subnet_1",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_nat_gateway",
+      "name": "mwaa_nat_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allocation_id": "eipalloc-0f93b6c4a5e49a3d3",
+            "association_id": "eipassoc-0ff5cff7d9a09812b",
+            "auto_provision_zones": null,
+            "auto_scaling_ips": null,
+            "availability_mode": "zonal",
+            "availability_zone_address": [],
+            "connectivity_type": "public",
+            "id": "nat-07df277e95560ee55",
+            "network_interface_id": "eni-07286bb44eec47ba4",
+            "private_ip": "10.0.2.213",
+            "public_ip": "100.50.46.52",
+            "region": "us-east-1",
+            "regional_nat_gateway_address": [],
+            "regional_nat_gateway_auto_mode": null,
+            "route_table_id": null,
+            "secondary_allocation_ids": [],
+            "secondary_private_ip_address_count": 0,
+            "secondary_private_ip_addresses": [],
+            "subnet_id": "subnet-03631b35f4edcc179",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway 2"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA NAT Gateway 2"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTgwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_2",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_subnet.mwaa_public_subnet_2",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "mwaa_private_rt_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:route-table/rtb-0b2ae5ec17ebc67e5",
+            "id": "rtb-0b2ae5ec17ebc67e5",
+            "owner_id": "236510206723",
+            "propagating_vgws": [],
+            "region": "us-east-1",
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "nat-06b3cf33ac49dc9be",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Private Route Table 1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Private Route Table 1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "rtb-0b2ae5ec17ebc67e5",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_1",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_nat_gateway.mwaa_nat_1",
+            "aws_subnet.mwaa_public_subnet_1",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "mwaa_private_rt_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:route-table/rtb-049eaf781c75515ee",
+            "id": "rtb-049eaf781c75515ee",
+            "owner_id": "236510206723",
+            "propagating_vgws": [],
+            "region": "us-east-1",
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "nat-07df277e95560ee55",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Private Route Table 2"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Private Route Table 2"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "rtb-049eaf781c75515ee",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_2",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_nat_gateway.mwaa_nat_2",
+            "aws_subnet.mwaa_public_subnet_2",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "mwaa_public_rt",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:route-table/rtb-0f642492a1038ab42",
+            "id": "rtb-0f642492a1038ab42",
+            "owner_id": "236510206723",
+            "propagating_vgws": [],
+            "region": "us-east-1",
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "igw-032114a03399c2f0c",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Public Route Table"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Public Route Table"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "rtb-0f642492a1038ab42",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.mwaa_igw",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "mwaa_private_rta_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0ab8db34dbccf0c60",
+            "region": "us-east-1",
+            "route_table_id": "rtb-0b2ae5ec17ebc67e5",
+            "subnet_id": "subnet-0ef827699abf702e4",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_1",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_nat_gateway.mwaa_nat_1",
+            "aws_route_table.mwaa_private_rt_1",
+            "aws_subnet.mwaa_private_subnet_1",
+            "aws_subnet.mwaa_public_subnet_1",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "mwaa_private_rta_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0d7e62f472f0c887f",
+            "region": "us-east-1",
+            "route_table_id": "rtb-049eaf781c75515ee",
+            "subnet_id": "subnet-0ebf3a558ad86d19f",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_eip.mwaa_nat_eip_2",
+            "aws_internet_gateway.mwaa_igw",
+            "aws_nat_gateway.mwaa_nat_2",
+            "aws_route_table.mwaa_private_rt_2",
+            "aws_subnet.mwaa_private_subnet_2",
+            "aws_subnet.mwaa_public_subnet_2",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "mwaa_public_rta_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-04e771afcabff25ee",
+            "region": "us-east-1",
+            "route_table_id": "rtb-0f642492a1038ab42",
+            "subnet_id": "subnet-0ce0842acbad321d3",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.mwaa_igw",
+            "aws_route_table.mwaa_public_rt",
+            "aws_subnet.mwaa_public_subnet_1",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "mwaa_public_rta_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-080abfe2d37734768",
+            "region": "us-east-1",
+            "route_table_id": "rtb-0f642492a1038ab42",
+            "subnet_id": "subnet-03631b35f4edcc179",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.mwaa_igw",
+            "aws_route_table.mwaa_public_rt",
+            "aws_subnet.mwaa_public_subnet_2",
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "mba_datalake",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake",
+            "bucket": "enok-mba-thesis-datalake",
+            "bucket_domain_name": "enok-mba-thesis-datalake.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_region": "us-east-1",
+            "bucket_regional_domain_name": "enok-mba-thesis-datalake.s3.us-east-1.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": true,
+            "grant": [
+              {
+                "id": "92faaf0952c0f5e518a177789a82984242a5606688f3dfc329d8109959d93d1b",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3AQBSTGFYJSTF",
+            "id": "enok-mba-thesis-datalake",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "",
+            "region": "us-east-1",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {
+              "Environment": "dev",
+              "Name": "Public Compliance Data Lake",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "Public Compliance Data Lake",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": true,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "mwaa_bucket",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_domain_name": "enok-mba-thesis-datalake-mwaa.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_region": "us-east-1",
+            "bucket_regional_domain_name": "enok-mba-thesis-datalake-mwaa.s3.us-east-1.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": true,
+            "grant": [
+              {
+                "id": "92faaf0952c0f5e518a177789a82984242a5606688f3dfc329d8109959d93d1b",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3AQBSTGFYJSTF",
+            "id": "enok-mba-thesis-datalake-mwaa",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "",
+            "region": "us-east-1",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA DAGs and Dependencies",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA DAGs and Dependencies",
+              "Owner": "Enok Jesus",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": true,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "mwaa_public_access_block",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "id": "enok-mba-thesis-datalake-mwaa",
+            "ignore_public_acls": true,
+            "region": "us-east-1",
+            "restrict_public_buckets": true,
+            "skip_destroy": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_versioning",
+      "name": "datalake_versioning",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "enok-mba-thesis-datalake",
+            "expected_bucket_owner": "",
+            "id": "enok-mba-thesis-datalake",
+            "mfa": null,
+            "region": "us-east-1",
+            "versioning_configuration": [
+              {
+                "mfa_delete": "",
+                "status": "Enabled"
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 1,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mba_datalake"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_versioning",
+      "name": "mwaa_versioning",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "expected_bucket_owner": "",
+            "id": "enok-mba-thesis-datalake-mwaa",
+            "mfa": null,
+            "region": "us-east-1",
+            "versioning_configuration": [
+              {
+                "mfa_delete": "",
+                "status": "Enabled"
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 1,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_object",
+      "name": "dags",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "bronze_layer_ingestion.py",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa/dags/bronze_layer_ingestion.py",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": null,
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "036eeef0e9a1252b5eabbb405660e62b",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake-mwaa/dags/bronze_layer_ingestion.py",
+            "key": "dags/bronze_layer_ingestion.py",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": "./../dags/bronze_layer_ingestion.py",
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "key": "dags/bronze_layer_ingestion.py",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        },
+        {
+          "index_key": "compliance_data_pipeline.py",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa/dags/compliance_data_pipeline.py",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": null,
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "accc657027336038d23a45ab5996c67b",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake-mwaa/dags/compliance_data_pipeline.py",
+            "key": "dags/compliance_data_pipeline.py",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": "./../dags/compliance_data_pipeline.py",
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "key": "dags/compliance_data_pipeline.py",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        },
+        {
+          "index_key": "gold_layer_analytics.py",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa/dags/gold_layer_analytics.py",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": null,
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "a4afa856b1483dcbd220f06e91c800a0",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake-mwaa/dags/gold_layer_analytics.py",
+            "key": "dags/gold_layer_analytics.py",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": "./../dags/gold_layer_analytics.py",
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "eGHSIDDzo7e4DFpM4iFNBScc9GDrEPQR",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "key": "dags/gold_layer_analytics.py",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        },
+        {
+          "index_key": "silver_layer_transformation.py",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa/dags/silver_layer_transformation.py",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": null,
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "2d9e3337159fdfaf3aa994ef46f64990",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake-mwaa/dags/silver_layer_transformation.py",
+            "key": "dags/silver_layer_transformation.py",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": "./../dags/silver_layer_transformation.py",
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "key": "dags/silver_layer_transformation.py",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_object",
+      "name": "layers",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "audit/",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake/audit/",
+            "bucket": "enok-mba-thesis-datalake",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": "",
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "d41d8cd98f00b204e9800998ecf8427e",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake/audit/",
+            "key": "audit/",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": null,
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "key": "audit/",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mba_datalake"
+          ]
+        },
+        {
+          "index_key": "bronze/",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake/bronze/",
+            "bucket": "enok-mba-thesis-datalake",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": "",
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "d41d8cd98f00b204e9800998ecf8427e",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake/bronze/",
+            "key": "bronze/",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": null,
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "key": "bronze/",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mba_datalake"
+          ]
+        },
+        {
+          "index_key": "gold/",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake/gold/",
+            "bucket": "enok-mba-thesis-datalake",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": "",
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "d41d8cd98f00b204e9800998ecf8427e",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake/gold/",
+            "key": "gold/",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": null,
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "key": "gold/",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mba_datalake"
+          ]
+        },
+        {
+          "index_key": "silver/",
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake/silver/",
+            "bucket": "enok-mba-thesis-datalake",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": "",
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "application/octet-stream",
+            "etag": "d41d8cd98f00b204e9800998ecf8427e",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake/silver/",
+            "key": "silver/",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": null,
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "null",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake",
+            "key": "silver/",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mba_datalake"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_object",
+      "name": "requirements",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl": null,
+            "arn": "arn:aws:s3:::enok-mba-thesis-datalake-mwaa/requirements.txt",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "bucket_key_enabled": false,
+            "cache_control": "",
+            "checksum_algorithm": null,
+            "checksum_crc32": "",
+            "checksum_crc32c": "",
+            "checksum_crc64nvme": "",
+            "checksum_sha1": "",
+            "checksum_sha256": "",
+            "content": null,
+            "content_base64": null,
+            "content_disposition": "",
+            "content_encoding": "",
+            "content_language": "",
+            "content_type": "text/plain",
+            "etag": "14e257b7f1dbc898611654d7da663d90",
+            "force_destroy": false,
+            "id": "enok-mba-thesis-datalake-mwaa/requirements.txt",
+            "key": "requirements.txt",
+            "kms_key_id": null,
+            "metadata": {},
+            "object_lock_legal_hold_status": "",
+            "object_lock_mode": "",
+            "object_lock_retain_until_date": "",
+            "override_provider": [],
+            "region": "us-east-1",
+            "server_side_encryption": "AES256",
+            "source": "./../requirements.txt",
+            "source_hash": null,
+            "storage_class": "STANDARD",
+            "tags": {},
+            "tags_all": {},
+            "version_id": "h.yurbr8sxrA1qAaDWeLLz.cH0FuN1WF",
+            "website_redirect": ""
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "bucket": "enok-mba-thesis-datalake-mwaa",
+            "key": "requirements.txt",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.mwaa_bucket",
+            "aws_s3_bucket_versioning.mwaa_versioning"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_secretsmanager_secret",
+      "name": "transparency_api_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+            "description": "API key for Transparency Portal (Portal da Transparência)",
+            "force_overwrite_replica_secret": false,
+            "id": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+            "kms_key_id": "",
+            "name": "mba-thesis/transparency-api-key-dev",
+            "name_prefix": "",
+            "policy": "",
+            "recovery_window_in_days": 30,
+            "region": "us-east-1",
+            "replica": [],
+            "tags": {
+              "Environment": "dev",
+              "Name": "Transparency API Key",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "Transparency API Key",
+              "Project": "MBA-Thesis-USP-Esalq"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "arn": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0"
+          },
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_secretsmanager_secret_version",
+      "name": "transparency_api_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+            "has_secret_string_wo": null,
+            "id": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0|terraform-20260203232010398300000002",
+            "region": "us-east-1",
+            "secret_binary": "",
+            "secret_id": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+            "secret_string": "{\"TRANSPARENCY_API_KEY\":\"0771496c5fd0046238ad4f8851e3fabc\"}",
+            "secret_string_wo": null,
+            "secret_string_wo_version": null,
+            "version_id": "terraform-20260203232010398300000002",
+            "version_stages": [
+              "AWSCURRENT"
+            ]
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "secret_binary"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secret_string"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secret_string_wo"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "region": "us-east-1",
+            "secret_id": "arn:aws:secretsmanager:us-east-1:236510206723:secret:mba-thesis/transparency-api-key-dev-1kGKP0",
+            "version_id": "terraform-20260203232010398300000002"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_secretsmanager_secret.transparency_api_key"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "mwaa_sg",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:security-group/sg-0aee570e2eb3f56e3",
+            "description": "Security group for MWAA environment",
+            "egress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": false,
+                "to_port": 0
+              }
+            ],
+            "id": "sg-0aee570e2eb3f56e3",
+            "ingress": [
+              {
+                "cidr_blocks": [],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": true,
+                "to_port": 0
+              }
+            ],
+            "name": "mwaa-security-group",
+            "name_prefix": "",
+            "owner_id": "236510206723",
+            "region": "us-east-1",
+            "revoke_rules_on_delete": false,
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Security Group"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Security Group"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "sg-0aee570e2eb3f56e3",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "mwaa_private_subnet_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:subnet/subnet-0ef827699abf702e4",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1a",
+            "availability_zone_id": "use1-az1",
+            "cidr_block": "10.0.11.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0ef827699abf702e4",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_ipam_pool_id": null,
+            "ipv6_native": false,
+            "ipv6_netmask_length": null,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "236510206723",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Private Subnet 1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Private Subnet 1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "subnet-0ef827699abf702e4",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "mwaa_private_subnet_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:subnet/subnet-0ebf3a558ad86d19f",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1b",
+            "availability_zone_id": "use1-az2",
+            "cidr_block": "10.0.12.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0ebf3a558ad86d19f",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_ipam_pool_id": null,
+            "ipv6_native": false,
+            "ipv6_netmask_length": null,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "236510206723",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Private Subnet 2"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Private Subnet 2"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "subnet-0ebf3a558ad86d19f",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "mwaa_public_subnet_1",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:subnet/subnet-0ce0842acbad321d3",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1a",
+            "availability_zone_id": "use1-az1",
+            "cidr_block": "10.0.1.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0ce0842acbad321d3",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_ipam_pool_id": null,
+            "ipv6_native": false,
+            "ipv6_netmask_length": null,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "236510206723",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Public Subnet 1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Public Subnet 1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "subnet-0ce0842acbad321d3",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "mwaa_public_subnet_2",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:subnet/subnet-03631b35f4edcc179",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1b",
+            "availability_zone_id": "use1-az2",
+            "cidr_block": "10.0.2.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-03631b35f4edcc179",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_ipam_pool_id": null,
+            "ipv6_native": false,
+            "ipv6_netmask_length": null,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "236510206723",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA Public Subnet 2"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA Public Subnet 2"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0a0a6ee4a55c8691b"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "subnet-03631b35f4edcc179",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.mwaa_vpc"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "mwaa_vpc",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:236510206723:vpc/vpc-0a0a6ee4a55c8691b",
+            "assign_generated_ipv6_cidr_block": false,
+            "cidr_block": "10.0.0.0/16",
+            "default_network_acl_id": "acl-041951f30223a2cdf",
+            "default_route_table_id": "rtb-094bc599e2065068d",
+            "default_security_group_id": "sg-05a503e60c307d2fa",
+            "dhcp_options_id": "dopt-0d7ef03b0df2849f6",
+            "enable_dns_hostnames": true,
+            "enable_dns_support": true,
+            "enable_network_address_usage_metrics": false,
+            "id": "vpc-0a0a6ee4a55c8691b",
+            "instance_tenancy": "default",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_association_id": "",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_network_border_group": "",
+            "ipv6_ipam_pool_id": "",
+            "ipv6_netmask_length": 0,
+            "main_route_table_id": "rtb-094bc599e2065068d",
+            "owner_id": "236510206723",
+            "region": "us-east-1",
+            "tags": {
+              "Environment": "dev",
+              "Name": "MWAA VPC",
+              "Project": "MBA-Thesis-USP-Esalq"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "MWAA VPC",
+              "Project": "MBA-Thesis-USP-Esalq"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "236510206723",
+            "id": "vpc-0a0a6ee4a55c8691b",
+            "region": "us-east-1"
+          },
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

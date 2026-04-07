@@ -1,0 +1,304 @@
+{
+  "version": "1.0.0",
+  "description": "Silver layer schemas for normalized municipality-level data",
+  "output_format": "parquet",
+  "partitioning": {
+    "by_state": true,
+    "by_year": true
+  },
+  "schemas": {
+    "municipalities": {
+      "description": "Master dimension table for Brazilian municipalities",
+      "output_path": "silver/dim_municipalities",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "municipality_name": {"type": "string", "description": "Municipality name (without state suffix)"},
+        "state_code": {"type": "string", "description": "2-digit state code (extracted from municipality_code)"},
+        "state_abbrev": {"type": "string", "description": "2-letter state abbreviation (RO, SP, etc.)"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name (Norte, Nordeste, etc.)"}
+      },
+      "primary_key": "municipality_code"
+    },
+    "census_population": {
+      "description": "Population data from Census 2010 and 2022",
+      "source_bronze": ["bronze/ibge/census_2010_pop.json", "bronze/ibge/census_2022_pop.json"],
+      "output_path": "silver/fact_population",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "year": {"type": "integer", "description": "Census year (2010 or 2022)"},
+        "total_population": {"type": "integer", "description": "Total resident population"}
+      },
+      "primary_key": ["municipality_code", "year"]
+    },
+    "census_sanitation": {
+      "description": "Household counts from Census 2010 and 2022",
+      "source_bronze": ["bronze/ibge/census_2010_sanitation.json", "bronze/ibge/census_2022_sanitation.json"],
+      "output_path": "silver/fact_sanitation",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "year": {"type": "integer", "description": "Census year (2010 or 2022)"},
+        "total_households": {"type": "integer", "description": "Total permanent private households"}
+      },
+      "primary_key": ["municipality_code", "year"]
+    },
+    "census_literacy": {
+      "description": "Literacy rates from Census 2010 (Table 1383) and 2022 (Table 9543)",
+      "source_bronze": ["bronze/ibge/census_2010_literacy.json", "bronze/ibge/census_2022_literacy.json"],
+      "output_path": "silver/fact_literacy",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "year": {"type": "integer", "description": "Census year (2010 or 2022)"},
+        "literacy_rate": {"type": "float", "description": "Literacy rate percentage"}
+      },
+      "primary_key": ["municipality_code", "year"]
+    },
+    "census_income": {
+      "description": "Income data from Census 2010 and 2022 enriched with IPCA-based deflators to 2022 BRL",
+      "source_bronze": ["bronze/ibge/census_2010_income.json", "bronze/ibge/census_2022_income.json", "bronze/economic/ipca_monthly.json"],
+      "output_path": "silver/fact_income",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "year": {"type": "integer", "description": "Census year (2010 or 2022)"},
+        "avg_income": {"type": "float", "description": "Average nominal monthly household income per capita (BRL)"},
+        "annual_ipca_rate_pct": {"type": "float", "description": "Annual IPCA inflation rate for the income reference year (%)"},
+        "ipca_index_avg": {"type": "float", "description": "Average annual chain-linked IPCA index"},
+        "deflator_to_2022": {"type": "float", "description": "Factor to restate nominal values in 2022 BRL"},
+        "reference_base_year": {"type": "integer", "description": "Base year used for real-income deflation"},
+        "avg_income_real_2022_brl": {"type": "float", "description": "Average income adjusted to 2022 BRL"}
+      },
+      "primary_key": ["municipality_code", "year"]
+    },
+    "inflation_index": {
+      "description": "Annual IPCA reference index built from BCB SGS monthly series 433",
+      "source_bronze": ["bronze/economic/ipca_monthly.json"],
+      "output_path": "silver/dim_inflation_index",
+      "columns": {
+        "year": {"type": "integer", "description": "Calendar year"},
+        "annual_ipca_rate_pct": {"type": "float", "description": "Annual compounded IPCA rate (%)"},
+        "ipca_index_avg": {"type": "float", "description": "Average annual chain-linked IPCA index"},
+        "ipca_index_dec": {"type": "float", "description": "End-of-year chain-linked IPCA index"},
+        "deflator_to_2022": {"type": "float", "description": "Factor to express values in 2022 BRL"},
+        "reference_base_year": {"type": "integer", "description": "Base year used for deflation"},
+        "last_reference_date": {"type": "date", "description": "Last monthly observation included in the annual reference"}
+      },
+      "primary_key": "year"
+    },
+    "federal_transfers": {
+      "description": "Federal transfers to municipalities (2013-2017 available, monthly granularity)",
+      "source_bronze": ["bronze/transparency/federal_transfers_*_*.json"],
+      "source_pattern": "federal_transfers_YYYY_MM.json (discovered dynamically from S3)",
+      "output_path": "silver/fact_federal_transfers",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code", "nullable": true},
+        "year": {"type": "integer", "description": "Transfer year"},
+        "month": {"type": "integer", "description": "Transfer month"},
+        "transfer_amount": {"type": "float", "description": "Transfer amount (BRL)"},
+        "transfer_type": {"type": "string", "description": "Type of transfer"},
+        "source_agency": {"type": "string", "description": "Source federal agency"}
+      },
+      "primary_key": ["year", "month", "transfer_type", "transfer_amount"],
+      "notes": "Transformer discovers monthly files dynamically. Idempotent - safe to run multiple times. Skips missing files gracefully."
+    },
+    "compliance_sanctions": {
+      "description": "Compliance sanctions from CEIS, CNEP, CEPIM registries (CEAF excluded - no location data)",
+      "source_bronze": ["bronze/transparency/ceis_compliance.json", "bronze/transparency/cnep_compliance.json", "bronze/transparency/cepim_compliance.json"],
+      "output_path": "silver/fact_sanctions",
+      "columns": {
+        "sanction_id": {"type": "string", "description": "Unique sanction identifier"},
+        "registry_type": {"type": "string", "description": "Registry source (CEIS, CNEP, CEPIM)"},
+        "sanctioned_entity": {"type": "string", "description": "Name of sanctioned entity/person"},
+        "entity_type": {"type": "string", "description": "Type: PF (individual) or PJ (company)"},
+        "cpf_cnpj": {"type": "string", "description": "CPF or CNPJ (masked for privacy)"},
+        "sanction_type": {"type": "string", "description": "Type of sanction applied"},
+        "sanction_start_date": {"type": "date", "description": "Sanction start date"},
+        "sanction_end_date": {"type": "date", "description": "Sanction end date", "nullable": true},
+        "sanctioning_agency": {"type": "string", "description": "Agency that applied the sanction"},
+        "state_code": {"type": "string", "description": "State code where sanction was applied", "nullable": true},
+        "municipality_code": {"type": "string", "description": "Municipality code (extracted from agency name for municipal sanctions)", "nullable": true}
+      },
+      "primary_key": ["sanction_id", "registry_type"]
+    },
+    "gold_municipality_socioeconomic": {
+      "description": "Municipality-level socioeconomic aggregation with change metrics (Gold layer)",
+      "source_silver": ["silver/dim_municipalities", "silver/fact_population", "silver/fact_literacy", "silver/fact_income", "silver/fact_sanitation"],
+      "output_path": "gold/agg_municipality_socioeconomic",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "municipality_name": {"type": "string", "description": "Municipality name"},
+        "state_code": {"type": "string", "description": "2-digit state code"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name"},
+        "population_2010": {"type": "integer", "description": "Population in 2010", "nullable": true},
+        "population_2022": {"type": "integer", "description": "Population in 2022", "nullable": true},
+        "population_change_pct": {"type": "float", "description": "Population change percentage 2010-2022", "nullable": true},
+        "literacy_rate_2010": {"type": "float", "description": "Literacy rate 2010 (%)", "nullable": true},
+        "literacy_rate_2022": {"type": "float", "description": "Literacy rate 2022 (%)", "nullable": true},
+        "literacy_change_pp": {"type": "float", "description": "Literacy change in percentage points", "nullable": true},
+        "avg_income_2010": {"type": "float", "description": "Average income 2010 (BRL)", "nullable": true},
+        "avg_income_2022": {"type": "float", "description": "Average income 2022 (BRL)", "nullable": true},
+        "avg_income_real_2010_2022_brl": {"type": "float", "description": "Average 2010 income restated to 2022 BRL", "nullable": true},
+        "avg_income_real_2022_2022_brl": {"type": "float", "description": "Average 2022 income in 2022 BRL", "nullable": true},
+        "income_change_pct": {"type": "float", "description": "Income change percentage 2010-2022", "nullable": true},
+        "income_change_real_pct": {"type": "float", "description": "Real income change percentage 2010-2022 in 2022 BRL", "nullable": true},
+        "households_2010": {"type": "integer", "description": "Total households 2010", "nullable": true},
+        "households_2022": {"type": "integer", "description": "Total households 2022", "nullable": true},
+        "households_change_pct": {"type": "float", "description": "Households change percentage 2010-2022", "nullable": true}
+      },
+      "primary_key": "municipality_code"
+    },
+    "gold_state_summary": {
+      "description": "State-level summary aggregations (Gold layer)",
+      "source_silver": ["silver/dim_municipalities", "silver/fact_population", "silver/fact_income", "silver/fact_sanctions"],
+      "output_path": "gold/agg_state_summary",
+      "columns": {
+        "state_code": {"type": "string", "description": "2-digit state code"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name"},
+        "municipality_count": {"type": "integer", "description": "Number of municipalities in state"},
+        "total_population_2010": {"type": "integer", "description": "Total population 2010", "nullable": true},
+        "total_population_2022": {"type": "integer", "description": "Total population 2022", "nullable": true},
+        "population_change_pct": {"type": "float", "description": "Population change percentage", "nullable": true},
+        "avg_income_2010": {"type": "float", "description": "Average nominal income 2010 (BRL)", "nullable": true},
+        "avg_income_2022": {"type": "float", "description": "Average income 2022 (BRL)", "nullable": true},
+        "avg_income_real_2010_2022_brl": {"type": "float", "description": "Average 2010 income restated to 2022 BRL", "nullable": true},
+        "avg_income_real_2022_2022_brl": {"type": "float", "description": "Average 2022 income in 2022 BRL", "nullable": true},
+        "income_change_pct": {"type": "float", "description": "Nominal income change percentage", "nullable": true},
+        "income_change_real_pct": {"type": "float", "description": "Real income change percentage in 2022 BRL", "nullable": true},
+        "total_sanctions": {"type": "integer", "description": "Total sanctions count"},
+        "sanctions_pf": {"type": "integer", "description": "Sanctions against individuals (PF)"},
+        "sanctions_pj": {"type": "integer", "description": "Sanctions against companies (PJ)"},
+        "sanctions_per_100k": {"type": "float", "description": "Sanctions per 100k population", "nullable": true}
+      },
+      "primary_key": "state_code"
+    },
+    "gold_sanctions_summary": {
+      "description": "Sanctions aggregations by registry type (Gold layer)",
+      "source_silver": ["silver/fact_sanctions"],
+      "output_path": "gold/agg_sanctions_summary",
+      "columns": {
+        "registry_type": {"type": "string", "description": "Registry source (CEIS, CNEP, CEPIM)"},
+        "total_sanctions": {"type": "integer", "description": "Total sanctions count"},
+        "sanctions_pf": {"type": "integer", "description": "Sanctions against individuals (PF)"},
+        "sanctions_pj": {"type": "integer", "description": "Sanctions against companies (PJ)"},
+        "pj_ratio_pct": {"type": "float", "description": "Percentage of PJ sanctions"},
+        "unique_agencies": {"type": "integer", "description": "Number of unique sanctioning agencies"},
+        "earliest_sanction": {"type": "date", "description": "Earliest sanction date", "nullable": true},
+        "latest_sanction": {"type": "date", "description": "Latest sanction date", "nullable": true}
+      },
+      "primary_key": "registry_type"
+    },
+    "gold_analysis_compliance": {
+      "description": "Analysis-ready compliance dataset for regression/correlation (Gold layer)",
+      "source_silver": ["silver/dim_municipalities", "silver/fact_population", "silver/fact_literacy", "silver/fact_income", "silver/fact_sanctions"],
+      "output_path": "gold/analysis_compliance",
+      "columns": {
+        "state_code": {"type": "string", "description": "2-digit state code"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name"},
+        "n_municipalities": {"type": "integer", "description": "Number of municipalities"},
+        "population": {"type": "integer", "description": "Total population 2022", "nullable": true},
+        "avg_literacy_rate": {"type": "float", "description": "Average literacy rate 2022 (%)", "nullable": true},
+        "avg_income": {"type": "float", "description": "Average income 2022 (BRL)", "nullable": true},
+        "n_sanctions": {"type": "integer", "description": "Total sanctions count"},
+        "n_sanctions_ceis": {"type": "integer", "description": "CEIS sanctions count"},
+        "n_sanctions_cnep": {"type": "integer", "description": "CNEP sanctions count"},
+        "n_sanctions_cepim": {"type": "integer", "description": "CEPIM sanctions count"},
+        "sanctions_per_100k": {"type": "float", "description": "Sanctions per 100k population", "nullable": true},
+        "log_population": {"type": "float", "description": "Log-transformed population", "nullable": true},
+        "log_income": {"type": "float", "description": "Log-transformed income", "nullable": true},
+        "is_norte": {"type": "integer", "description": "Dummy: Norte region"},
+        "is_nordeste": {"type": "integer", "description": "Dummy: Nordeste region"},
+        "is_sudeste": {"type": "integer", "description": "Dummy: Sudeste region"},
+        "is_sul": {"type": "integer", "description": "Dummy: Sul region"},
+        "is_centro_oeste": {"type": "integer", "description": "Dummy: Centro-Oeste region"}
+      },
+      "primary_key": "state_code"
+    },
+    "gold_consolidated_clustering": {
+      "description": "Consolidated municipality-level dataset for K-means clustering and PCA (Gold layer)",
+      "source_silver": ["silver/dim_municipalities", "silver/fact_population", "silver/fact_literacy", "silver/fact_income", "silver/fact_sanitation"],
+      "output_path": "gold/consolidated_clustering",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "municipality_name": {"type": "string", "description": "Municipality name"},
+        "state_code": {"type": "string", "description": "2-digit state code"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name"},
+        "population_2010": {"type": "integer", "description": "Population in 2010"},
+        "population_2022": {"type": "integer", "description": "Population in 2022"},
+        "population_change_pct": {"type": "float", "description": "Population change % (2010-2022)"},
+        "literacy_rate_2010": {"type": "float", "description": "Literacy rate 2010 (%)"},
+        "literacy_rate_2022": {"type": "float", "description": "Literacy rate 2022 (%)"},
+        "literacy_change_pp": {"type": "float", "description": "Literacy change in percentage points"},
+        "avg_income_2010": {"type": "float", "description": "Average income 2010 (BRL)"},
+        "avg_income_2022": {"type": "float", "description": "Average income 2022 (BRL)"},
+        "avg_income_real_2010_2022_brl": {"type": "float", "description": "Average 2010 income restated to 2022 BRL"},
+        "avg_income_real_2022_2022_brl": {"type": "float", "description": "Average 2022 income in 2022 BRL"},
+        "income_change_pct": {"type": "float", "description": "Income change % (2010-2022)"},
+        "income_change_real_pct": {"type": "float", "description": "Real income change % (2010-2022)"},
+        "households_2010": {"type": "integer", "description": "Total households 2010"},
+        "households_2022": {"type": "integer", "description": "Total households 2022"},
+        "households_change_pct": {"type": "float", "description": "Households change % (2010-2022)"},
+        "population_2010_norm": {"type": "float", "description": "Z-score normalized population 2010"},
+        "population_2022_norm": {"type": "float", "description": "Z-score normalized population 2022"},
+        "population_change_pct_norm": {"type": "float", "description": "Z-score normalized population change"},
+        "literacy_rate_2010_norm": {"type": "float", "description": "Z-score normalized literacy rate 2010"},
+        "literacy_rate_2022_norm": {"type": "float", "description": "Z-score normalized literacy rate 2022"},
+        "literacy_change_pp_norm": {"type": "float", "description": "Z-score normalized literacy change"},
+        "avg_income_real_2010_2022_brl_norm": {"type": "float", "description": "Z-score normalized real income 2010 in 2022 BRL"},
+        "avg_income_real_2022_2022_brl_norm": {"type": "float", "description": "Z-score normalized real income 2022 in 2022 BRL"},
+        "income_change_real_pct_norm": {"type": "float", "description": "Z-score normalized real income change"},
+        "households_2010_norm": {"type": "float", "description": "Z-score normalized households 2010"},
+        "households_2022_norm": {"type": "float", "description": "Z-score normalized households 2022"},
+        "households_change_pct_norm": {"type": "float", "description": "Z-score normalized households change"},
+        "log_population_2022": {"type": "float", "description": "Log-transformed population 2022"},
+        "log_avg_income_2022": {"type": "float", "description": "Log-transformed nominal income 2022"},
+        "log_households_2022": {"type": "float", "description": "Log-transformed households 2022"}
+      },
+      "primary_key": "municipality_code",
+      "notes": "No missing values - rows with any missing clustering features are dropped. All municipalities are unique."
+    }
+  },
+  "region_mapping": {
+    "1": {"name": "Norte", "states": ["11", "12", "13", "14", "15", "16", "17"]},
+    "2": {"name": "Nordeste", "states": ["21", "22", "23", "24", "25", "26", "27", "28", "29"]},
+    "3": {"name": "Sudeste", "states": ["31", "32", "33", "35"]},
+    "4": {"name": "Sul", "states": ["41", "42", "43"]},
+    "5": {"name": "Centro-Oeste", "states": ["50", "51", "52", "53"]}
+  },
+  "state_mapping": {
+    "11": "Rondônia",
+    "12": "Acre",
+    "13": "Amazonas",
+    "14": "Roraima",
+    "15": "Pará",
+    "16": "Amapá",
+    "17": "Tocantins",
+    "21": "Maranhão",
+    "22": "Piauí",
+    "23": "Ceará",
+    "24": "Rio Grande do Norte",
+    "25": "Paraíba",
+    "26": "Pernambuco",
+    "27": "Alagoas",
+    "28": "Sergipe",
+    "29": "Bahia",
+    "31": "Minas Gerais",
+    "32": "Espírito Santo",
+    "33": "Rio de Janeiro",
+    "35": "São Paulo",
+    "41": "Paraná",
+    "42": "Santa Catarina",
+    "43": "Rio Grande do Sul",
+    "50": "Mato Grosso do Sul",
+    "51": "Mato Grosso",
+    "52": "Goiás",
+    "53": "Distrito Federal"
+  }
+}
