@@ -1,0 +1,45 @@
+# Keep shared setup examples out of indexing noise.
+.setup/examples/
+.setup/integrations/jira.md
+.setup/integrations/confluence.md
+
+# BEGIN TOOLKIT SELECTION FILTERS
+# Auto-generated from docs/llm/toolkit-selection.txt by sync-tool-configs.sh.
+# When .cursor/ is linked to the shared toolkit, hide non-selected shared files locally.
+.windsurf/rules/allowlist-controller-review-pitfalls.md
+.cursor/rules/allowlist-controller-review-pitfalls.md
+.windsurf/rules/api-contract-surface.md
+.cursor/rules/api-contract-surface.md
+.windsurf/rules/ci-feedback-loop.md
+.cursor/rules/ci-feedback-loop.md
+.windsurf/rules/e2e-scoped-coverage.md
+.cursor/rules/e2e-scoped-coverage.md
+.windsurf/rules/frontend.md
+.cursor/rules/frontend.md
+.windsurf/rules/java-best-practices.md
+.cursor/rules/java-best-practices.md
+.windsurf/rules/js-ts-best-practices.md
+.cursor/rules/js-ts-best-practices.md
+.windsurf/rules/multilingual-doc-sync.md
+.cursor/rules/multilingual-doc-sync.md
+.windsurf/rules/release-safety.md
+.cursor/rules/release-safety.md
+.windsurf/workflows/cross-repo-impact.md
+.cursor/rules/workflow-cross-repo-impact.md
+.windsurf/workflows/cursor-pr-validation.md
+.cursor/rules/workflow-cursor-pr-validation.md
+.windsurf/workflows/db-migration.md
+.cursor/rules/workflow-db-migration.md
+.windsurf/workflows/dependency-upgrade.md
+.cursor/rules/workflow-dependency-upgrade.md
+.windsurf/workflows/gh-address-comments.md
+.cursor/rules/workflow-gh-address-comments.md
+.windsurf/workflows/gh-fix-ci.md
+.cursor/rules/workflow-gh-fix-ci.md
+.windsurf/workflows/new-backend-feature.md
+.cursor/rules/workflow-new-backend-feature.md
+.windsurf/workflows/new-frontend-feature.md
+.cursor/rules/workflow-new-frontend-feature.md
+.windsurf/workflows/ticket-research.md
+.cursor/rules/workflow-ticket-research.md
+# END TOOLKIT SELECTION FILTERS

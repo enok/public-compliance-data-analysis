@@ -1,0 +1,71 @@
+# Curated shared toolkit profile for this repository
+#
+# Keep generic reusable rules and workflows in the shared toolkit.
+# Use this file to declare which shared items are relevant for
+# public-compliance-data-analysis.
+
+rules/analysis-artifact-governance.md
+rules/analytical-dataset-governance.md
+rules/analytics-reproducibility.md
+rules/aws-data-platform-ops.md
+rules/aws-airflow-terraform.md
+rules/best-practices.md
+rules/bilingual-doc-sync.md
+rules/code-rules.md
+rules/command-safety.md
+rules/data-artifact-hygiene.md
+rules/data-governance.md
+rules/data-pipeline-contracts.md
+rules/git-conventions.md
+rules/jupyter-notebook-hygiene.md
+rules/latex-in-notebooks.md
+rules/ml-evaluation-and-experimentation.md
+rules/ml-experiment-discipline.md
+rules/ml-experiment-governance.md
+rules/ml-experiment-rigor.md
+rules/multi-agent-orchestration.md
+rules/notebook-engineering.md
+rules/notebook-reproducibility.md
+rules/operational-doc-required.md
+rules/python-best-practices.md
+rules/research-rigor.md
+rules/repository-context-layers.md
+rules/review-and-fix-multi-agent.md
+rules/security.md
+rules/testing.md
+rules/error-driven-learning.md
+rules/evidence-based-reporting.md
+rules/security-check-required.md
+
+# Rubrics (not synced via toolkit-selection — referenced in AGENTS.md body):
+# rubrics/architecture.md
+# rubrics/code-review-checklist.md
+# rubrics/security.md
+
+workflows/aws-data-pipeline-ops.md
+workflows/aws-data-platform-ops.md
+workflows/aws-airflow-terraform-change.md
+workflows/bilingual-doc-sync.md
+workflows/data-pipeline-change.md
+workflows/dataset-onboarding.md
+workflows/document-creation.md
+workflows/environment-diagnose.md
+workflows/experiment-result-update.md
+workflows/ml-experiment.md
+workflows/ml-experiment-update.md
+workflows/notebook-analysis.md
+workflows/notebook-analysis-update.md
+workflows/notebook-latex-polish.md
+workflows/notebook-to-script.md
+workflows/paired-doc-sync.md
+workflows/pre-pr-check.md
+workflows/project-discovery.md
+workflows/research-analysis-cycle.md
+workflows/review.md
+workflows/review-and-fix.md
+workflows/run-tests.md
+workflows/capture-learning.md
+workflows/security-check-required.md
+workflows/security-report.md
+workflows/translation-sync.md
+workflows/update-docs.md

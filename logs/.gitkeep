@@ -1,0 +1,5 @@
+# This directory stores execution logs for deployment and pipeline scripts
+# Logs are automatically created with timestamps:
+# - infra-up-YYYYMMDD-HHMMSS.log
+# - infra-down-YYYYMMDD-HHMMSS.log
+# - run-pipeline-YYYYMMDD-HHMMSS.log
