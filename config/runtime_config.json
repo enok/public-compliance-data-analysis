@@ -1,0 +1,11 @@
+{
+  "aws": {
+    "profile": "enok-engineer",
+    "s3_bucket_name": "enok-mba-thesis-datalake"
+  },
+  "apis": {
+    "ibge_sidra_base_url": "https://apisidra.ibge.gov.br/values",
+    "transparency_base_url": "https://api.portaldatransparencia.gov.br/api-de-dados",
+    "bcb_ipca_monthly_url": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json"
+  }
+}
