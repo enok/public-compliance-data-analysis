@@ -13,3 +13,4 @@ seaborn>=0.13.0
 jupyter>=1.0.0
 ipykernel>=6.29.0
 plotly>=5.18.0
+pyshp>=2.3.1

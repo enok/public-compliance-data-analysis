@@ -20,6 +20,7 @@ Usage:
     df_estado = datasets.get('resumo_estado')
     df_sancoes = datasets.get('resumo_sancoes')
     df_analise = datasets.get('analise_compliance')
+    df_analise_municipio = datasets.get('analise_compliance_municipio')
 """
 
 import logging

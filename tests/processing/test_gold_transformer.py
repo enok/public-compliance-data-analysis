@@ -72,6 +72,16 @@ class TestGoldTransformer:
                         "n_sanctions": {"type": "integer"},
                         "sanctions_per_100k": {"type": "float", "nullable": True}
                     }
+                },
+                "gold_analysis_compliance_municipality": {
+                    "columns": {
+                        "municipality_code": {"type": "string"},
+                        "population_2022": {"type": "integer", "nullable": True},
+                        "n_sanctions": {"type": "integer"},
+                        "sanctions_per_100k": {"type": "float", "nullable": True},
+                        "total_transfers": {"type": "float"},
+                        "log_total_transfers": {"type": "float", "nullable": True}
+                    }
                 }
             },
             "state_mapping": {
@@ -361,6 +371,26 @@ class TestGoldAnalysisCompliance:
         assert df[df['state_code'] == '11']['is_norte'].values[0] == 1
 
 
+class TestGoldAnalysisComplianceMunicipality:
+    """Tests for municipality analysis compliance dataset."""
+
+    def test_sanctions_per_million_brl_transfers_calculation(self):
+        """Sanctions per million BRL should scale sanctions by transfer volume."""
+        n_sanctions = 3
+        total_transfers = 2_000_000.0
+
+        sanctions_per_million = round((n_sanctions / total_transfers) * 1_000_000, 6)
+        assert sanctions_per_million == 1.5
+
+    def test_avg_transfer_per_capita_calculation(self):
+        """Average transfer per capita should divide total transfers by population."""
+        total_transfers = 1_250_000.0
+        population = 50_000
+
+        transfer_per_capita = round(total_transfers / population, 4)
+        assert transfer_per_capita == 25.0
+
+
 class TestGoldTransformerIntegration:
     """Integration tests for GoldTransformer (mocked S3)."""
 
@@ -392,6 +422,12 @@ class TestGoldTransformerIntegration:
                 "gold_analysis_compliance": {
                     "columns": {
                         "state_code": {"type": "string"},
+                        "n_sanctions": {"type": "integer"}
+                    }
+                },
+                "gold_analysis_compliance_municipality": {
+                    "columns": {
+                        "municipality_code": {"type": "string"},
                         "n_sanctions": {"type": "integer"}
                     }
                 }

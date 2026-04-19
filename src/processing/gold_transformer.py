@@ -65,6 +65,10 @@ class GoldTransformer(BaseTransformer):
         # Build analysis-ready compliance dataset
         if not self._transform_analysis_compliance():
             success = False
+
+        # Build municipality-level analysis-ready compliance dataset
+        if not self._transform_analysis_compliance_municipality():
+            success = False
         
         # Build consolidated clustering dataset
         if not self._transform_clustering_dataset():
@@ -720,6 +724,197 @@ class GoldTransformer(BaseTransformer):
                           0, len(states), source_keys, output_key)
         
         logger.info(f"✅ Analysis Compliance: {len(states)} states ready for analysis")
+        return success
+
+    def _transform_analysis_compliance_municipality(self) -> bool:
+        """
+        Build municipality-level analysis-ready compliance dataset.
+
+        Joins socioeconomic indicators, sanctions, and transfer aggregates at
+        municipality level to support statistical and ML analysis beyond the
+        state-only perspective.
+
+        Output: gold/analysis_compliance_municipality/data.parquet
+        """
+        logger.info("📊 Building municipality analysis compliance dataset...")
+
+        output_key = 'gold/analysis_compliance_municipality/data.parquet'
+        metadata_key = 'gold/analysis_compliance_municipality/_metadata.json'
+
+        source_keys = [
+            self.SILVER_FILES['municipalities'],
+            self.SILVER_FILES['population'],
+            self.SILVER_FILES['literacy'],
+            self.SILVER_FILES['income'],
+            self.SILVER_FILES['sanctions'],
+            self.SILVER_FILES['federal_transfers'],
+        ]
+
+        # Smart caching check
+        should_skip, reason = self._should_skip_processing(output_key, metadata_key, source_keys)
+        if should_skip:
+            logger.info(f"⏭️  Skipping municipality analysis compliance: {reason}")
+            return True
+
+        # Read silver tables
+        df_muni = self._read_silver_parquet(self.SILVER_FILES['municipalities'])
+        df_pop = self._read_silver_parquet(self.SILVER_FILES['population'])
+        df_lit = self._read_silver_parquet(self.SILVER_FILES['literacy'])
+        df_inc = self._read_silver_parquet(self.SILVER_FILES['income'])
+        df_sanctions = self._read_silver_parquet(self.SILVER_FILES['sanctions'])
+        df_transfers = self._read_silver_parquet(self.SILVER_FILES['federal_transfers'])
+
+        if df_muni is None:
+            logger.error("❌ Missing municipalities dimension table")
+            return False
+
+        # Base result (one row per municipality)
+        cities = df_muni.copy()
+
+        # Population 2022
+        if df_pop is not None:
+            pop_2022 = df_pop[df_pop['year'] == 2022][['municipality_code', 'total_population']].copy()
+            pop_2022.columns = ['municipality_code', 'population_2022']
+            cities = cities.merge(pop_2022, on='municipality_code', how='left')
+
+        # Literacy 2022
+        if df_lit is not None:
+            lit_2022 = df_lit[df_lit['year'] == 2022][['municipality_code', 'literacy_rate']].copy()
+            lit_2022.columns = ['municipality_code', 'literacy_rate_2022']
+            cities = cities.merge(lit_2022, on='municipality_code', how='left')
+
+        # Income 2022 (nominal and real)
+        if df_inc is not None:
+            inc_2022 = df_inc[df_inc['year'] == 2022][
+                ['municipality_code', 'avg_income', 'avg_income_real_2022_brl']
+            ].copy()
+            inc_2022.columns = [
+                'municipality_code',
+                'avg_income_2022',
+                'avg_income_real_2022_2022_brl',
+            ]
+            cities = cities.merge(inc_2022, on='municipality_code', how='left')
+
+        # Sanctions counts by municipality (only rows with municipality_code)
+        if df_sanctions is not None and len(df_sanctions) > 0:
+            sanctions_geo = df_sanctions[df_sanctions['municipality_code'].notna()].copy()
+            if len(sanctions_geo) > 0:
+                sanctions_by_city = sanctions_geo.groupby('municipality_code').agg(
+                    n_sanctions=('sanction_id', 'nunique'),
+                    n_sanctions_ceis=('registry_type', lambda x: (x == 'CEIS').sum()),
+                    n_sanctions_cnep=('registry_type', lambda x: (x == 'CNEP').sum()),
+                    n_sanctions_cepim=('registry_type', lambda x: (x == 'CEPIM').sum()),
+                ).reset_index()
+                cities = cities.merge(sanctions_by_city, on='municipality_code', how='left')
+
+        # Ensure sanctions columns exist even when geolocation coverage is absent.
+        for col in ['n_sanctions', 'n_sanctions_ceis', 'n_sanctions_cnep', 'n_sanctions_cepim']:
+            if col not in cities.columns:
+                cities[col] = 0
+
+        # Federal transfers by municipality
+        if df_transfers is not None and len(df_transfers) > 0:
+            transfers_geo = df_transfers[df_transfers['municipality_code'].notna()].copy()
+            if len(transfers_geo) > 0:
+                transfers_by_city = transfers_geo.groupby('municipality_code').agg(
+                    total_transfers=('transfer_amount', 'sum'),
+                    n_transfer_records=('transfer_amount', 'size'),
+                ).reset_index()
+                transfers_by_city['total_transfers'] = transfers_by_city['total_transfers'].round(2)
+                cities = cities.merge(transfers_by_city, on='municipality_code', how='left')
+
+        # Fill count columns
+        count_cols = [
+            'n_sanctions',
+            'n_sanctions_ceis',
+            'n_sanctions_cnep',
+            'n_sanctions_cepim',
+            'n_transfer_records',
+        ]
+        for col in count_cols:
+            if col in cities.columns:
+                cities[col] = cities[col].fillna(0).astype(int)
+
+        # Fill transfer amount where missing
+        if 'total_transfers' in cities.columns:
+            cities['total_transfers'] = cities['total_transfers'].fillna(0.0).clip(lower=0.0).round(2)
+        else:
+            cities['total_transfers'] = 0.0
+            cities['n_transfer_records'] = 0
+
+        # Derived indicators
+        if 'population_2022' in cities.columns and 'n_sanctions' in cities.columns:
+            cities['sanctions_per_100k'] = cities.apply(
+                lambda row: round((row['n_sanctions'] / row['population_2022']) * 100000, 4)
+                if pd.notna(row.get('population_2022')) and row.get('population_2022', 0) > 0
+                else None,
+                axis=1
+            )
+
+        if 'population_2022' in cities.columns and 'total_transfers' in cities.columns:
+            cities['avg_transfer_per_capita'] = cities.apply(
+                lambda row: round(row['total_transfers'] / row['population_2022'], 4)
+                if pd.notna(row.get('population_2022')) and row.get('population_2022', 0) > 0
+                else None,
+                axis=1
+            )
+
+        cities['sanctions_per_million_brl_transfers'] = cities.apply(
+            lambda row: round((row['n_sanctions'] / row['total_transfers']) * 1_000_000, 6)
+            if pd.notna(row.get('total_transfers')) and row.get('total_transfers', 0) > 0
+            else None,
+            axis=1
+        )
+
+        if 'population_2022' in cities.columns:
+            cities['log_population'] = cities['population_2022'].apply(
+                lambda x: round(np.log(x), 6) if pd.notna(x) and x > 0 else None
+            )
+
+        if 'avg_income_real_2022_2022_brl' in cities.columns:
+            cities['log_income'] = cities['avg_income_real_2022_2022_brl'].apply(
+                lambda x: round(np.log(x), 6) if pd.notna(x) and x > 0 else None
+            )
+
+        cities['log_total_transfers'] = cities['total_transfers'].apply(
+            lambda x: round(np.log1p(x), 6) if pd.notna(x) and x >= 0 else None
+        )
+
+        # Sort for deterministic outputs
+        cities = cities.sort_values('municipality_code').reset_index(drop=True)
+
+        # Validate schema
+        cities = self.validate_schema(cities, 'gold_analysis_compliance_municipality')
+
+        # Write output
+        success = self._write_gold_parquet(cities, output_key)
+        self._write_gold_json(cities, output_key.replace('.parquet', '.json'))
+
+        # Save metadata
+        if success:
+            source_file_hashes = {}
+            for s3_key in source_keys:
+                file_hash = self._get_object_digest(s3_key)
+                if file_hash:
+                    source_file_hashes[s3_key] = file_hash
+
+            metadata = {
+                'source_files': source_file_hashes,
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'record_count': len(cities)
+            }
+            self._save_silver_metadata(metadata_key, metadata)
+
+        self.log_processing(
+            'gold_analysis_compliance_municipality',
+            'SUCCESS' if success else 'FAILED',
+            len(df_muni),
+            len(cities),
+            source_keys,
+            output_key,
+        )
+
+        logger.info(f"✅ Municipality Analysis Compliance: {len(cities)} municipalities ready for analysis")
         return success
 
 

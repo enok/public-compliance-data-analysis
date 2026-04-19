@@ -26,6 +26,7 @@ class GoldDataLoader:
         'state_summary': 'gold/agg_state_summary/data.parquet',
         'sanctions_summary': 'gold/agg_sanctions_summary/data.parquet',
         'analysis_compliance': 'gold/analysis_compliance/data.parquet',
+        'analysis_compliance_municipality': 'gold/analysis_compliance_municipality/data.parquet',
         'consolidated_clustering': 'gold/consolidated_clustering/data.parquet',
     }
     

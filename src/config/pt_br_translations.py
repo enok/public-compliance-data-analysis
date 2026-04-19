@@ -23,6 +23,7 @@ DATASET_TRANSLATIONS = {
     'state_summary': 'resumo_estado',
     'sanctions_summary': 'resumo_sancoes',
     'analysis_compliance': 'analise_compliance',
+    'analysis_compliance_municipality': 'analise_compliance_municipio',
     'consolidated_clustering': 'clustering_consolidado'
 }
 
@@ -76,6 +77,7 @@ COLUMN_TRANSLATIONS = {
     'n_sanctions_cnep': 'num_sancoes_cnep',
     'n_sanctions_cepim': 'num_sancoes_cepim',
     'sanctions_per_100k': 'sancoes_por_100k',
+    'sanctions_per_million_brl_transfers': 'sancoes_por_milhao_brl_transferencias',
     'total_sanctions': 'total_sancoes',
     
     # Sanctions by type
@@ -98,7 +100,9 @@ COLUMN_TRANSLATIONS = {
     
     # Federal transfers
     'total_transfers': 'total_transferencias',
+    'n_transfer_records': 'num_registros_transferencia',
     'avg_transfer_per_capita': 'transferencia_media_per_capita',
+    'log_total_transfers': 'log_total_transferencias',
 }
 
 # Reverse mappings (Portuguese to English)
@@ -112,6 +116,7 @@ DISPLAY_NAME_TRANSLATIONS = {
     'state_summary': 'Resumo por Estado',
     'sanctions_summary': 'Resumo de Sanções',
     'analysis_compliance': 'Análise de Compliance',
+    'analysis_compliance_municipality': 'Análise de Compliance Municipal',
     'consolidated_clustering': 'Clustering Consolidado',
     
     # Column display names
@@ -157,6 +162,7 @@ DISPLAY_NAME_TRANSLATIONS = {
     'n_sanctions_cnep': 'Sanções CNEP',
     'n_sanctions_cepim': 'Sanções CEPIM',
     'sanctions_per_100k': 'Sanções por 100 mil hab.',
+    'sanctions_per_million_brl_transfers': 'Sanções por Milhão de BRL em Transferências',
     'total_sanctions': 'Total de Sanções',
     
     'sanctions_pf': 'Sanções - Pessoa Física',
@@ -171,6 +177,10 @@ DISPLAY_NAME_TRANSLATIONS = {
     'is_sudeste': 'Região Sudeste',
     'is_sul': 'Região Sul',
     'is_centro_oeste': 'Região Centro-Oeste',
+    'total_transfers': 'Total de Transferências',
+    'n_transfer_records': 'Número de Registros de Transferência',
+    'avg_transfer_per_capita': 'Transferência Média per Capita',
+    'log_total_transfers': 'Log(Total de Transferências)',
 }
 
 

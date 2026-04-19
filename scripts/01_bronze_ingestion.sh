@@ -2,21 +2,40 @@
 # =============================================================================
 # STEP 1: BRONZE LAYER - Data Ingestion
 # =============================================================================
-# Fetches raw data from external APIs and stores in S3 Bronze layer.
+# Fetches raw data from external APIs and stores in Bronze layer.
 #
 # Sources:
 #   - IBGE SIDRA API: Census data (population, sanitation, literacy, income)
 #   - Transparency Portal API: Federal transfers, compliance sanctions
+#   - BCB API: IPCA inflation series
 #
-# Output: s3://enok-mba-thesis-datalake/bronze/
+# Storage Modes:
+#   local-only  - Store data locally (no AWS required)
+#   s3-only     - Store data in S3 (AWS required, default)
+#   both        - Store in both locations (redundancy)
 #
 # Usage:
 #   ./scripts/01_bronze_ingestion.sh [OPTIONS]
 #
 # Options:
+#   --local-only         Use local filesystem only (no AWS)
+#   --s3-only            Use S3 only (requires AWS credentials)
+#   --both               Use both local and S3
+#   --local-dir=PATH    Set local data directory
+#   --s3-bucket=NAME     Set S3 bucket name
 #   --only-ibge          Ingest only IBGE data
 #   --only-inflation     Ingest only inflation data
 #   --only-transparency  Ingest only Transparency Portal data
+#   --skip-ibge          Skip IBGE ingestion
+#   --skip-inflation     Skip inflation ingestion
+#   --skip-transparency  Skip Transparency ingestion
+#
+# Environment Variables:
+#   STORAGE_MODE         local-only, s3-only, or both (default: s3-only)
+#   LOCAL_DATA_DIR       Base directory for local storage
+#   S3_BUCKET_NAME       S3 bucket name
+#   AWS_PROFILE          AWS credentials profile
+#   TRANSPARENCY_API_KEY API key for Transparency Portal
 #
 # Optional env vars for targeted Transparency rechecks:
 #   TRANSPARENCY_FORCE_REFRESH=1  Recheck months even if metadata says no_data
@@ -55,6 +74,7 @@ SKIP_IBGE=${SKIP_IBGE:-0}
 SKIP_INFLATION=${SKIP_INFLATION:-0}
 SKIP_TRANSPARENCY=${SKIP_TRANSPARENCY:-0}
 
+# Parse command line arguments
 for arg in "$@"; do
     case $arg in
         --skip-ibge) SKIP_IBGE=1 ;;
@@ -63,6 +83,11 @@ for arg in "$@"; do
         --only-ibge) SKIP_INFLATION=1; SKIP_TRANSPARENCY=1 ;;
         --only-inflation) SKIP_IBGE=1; SKIP_TRANSPARENCY=1 ;;
         --only-transparency) SKIP_IBGE=1; SKIP_INFLATION=1 ;;
+        --local-only) STORAGE_MODE=local-only ;;
+        --s3-only) STORAGE_MODE=s3-only ;;
+        --both) STORAGE_MODE=both ;;
+        --local-dir=*) LOCAL_DATA_DIR="${arg#*=}" ; export LOCAL_DATA_DIR ;;
+        --s3-bucket=*) S3_BUCKET_NAME="${arg#*=}" ; export S3_BUCKET_NAME ;;
     esac
 done
 
@@ -121,6 +146,10 @@ if [ -f ".env" ]; then
     set +a
 fi
 
+# Check storage mode
+STORAGE_MODE="${STORAGE_MODE:-s3-only}"
+echo "Storage Mode: ${STORAGE_MODE}"
+
 read_runtime_value() {
     local key_path="$1"
     python3 - "$RUNTIME_CONFIG" "$key_path" <<'PY'
@@ -153,30 +182,36 @@ if [ ! -f ".env" ]; then
     echo "   Copy .env.example to .env and configure your credentials."
 fi
 
-AWS_PROFILE="${AWS_PROFILE:-$(read_runtime_value aws.profile)}"
-if [ -n "${AWS_PROFILE:-}" ]; then
-    export AWS_PROFILE
+# AWS configuration (only for s3-only or both modes)
+if [ "${STORAGE_MODE}" != "local-only" ]; then
+    AWS_PROFILE="${AWS_PROFILE:-$(read_runtime_value aws.profile)}"
+    if [ -n "${AWS_PROFILE:-}" ]; then
+        export AWS_PROFILE
+    fi
+
+    S3_BUCKET_NAME="${S3_BUCKET_NAME:-$(read_runtime_value aws.s3_bucket_name)}"
+    S3_BUCKET_NAME="${S3_BUCKET_NAME:-enok-mba-thesis-datalake}"
+
+    if ! aws sts get-caller-identity &> /dev/null; then
+        echo -e "${RED}❌ Error: AWS credentials not configured${NC}"
+        echo "   Configure AWS (e.g., aws configure) or use STORAGE_MODE=local-only"
+        exit 1
+    fi
+
+    echo -e "${GREEN}✓ AWS credentials configured${NC}"
+    echo "Target S3 Bucket: ${S3_BUCKET_NAME}"
+
+    if ! aws s3api head-bucket --bucket "${S3_BUCKET_NAME}" &> /dev/null; then
+        echo -e "${RED}❌ Error: Cannot access S3 bucket '${S3_BUCKET_NAME}'${NC}"
+        echo "   Verify bucket name and permissions."
+        exit 1
+    fi
+
+    echo -e "${GREEN}✓ S3 bucket accessible${NC}"
+else
+    echo -e "${GREEN}✓ Local-only mode: Skipping AWS checks${NC}"
+    S3_BUCKET_NAME="${S3_BUCKET_NAME:-enok-mba-thesis-datalake}"
 fi
-
-S3_BUCKET_NAME="${S3_BUCKET_NAME:-$(read_runtime_value aws.s3_bucket_name)}"
-S3_BUCKET_NAME="${S3_BUCKET_NAME:-enok-mba-thesis-datalake}"
-
-if ! aws sts get-caller-identity &> /dev/null; then
-    echo -e "${RED}❌ Error: AWS credentials not configured${NC}"
-    echo "   Configure AWS (e.g., aws configure) and try again."
-    exit 1
-fi
-
-echo -e "${GREEN}✓ AWS credentials configured${NC}"
-echo "Target S3 Bucket: ${S3_BUCKET_NAME}"
-
-if ! aws s3api head-bucket --bucket "${S3_BUCKET_NAME}" &> /dev/null; then
-    echo -e "${RED}❌ Error: Cannot access S3 bucket '${S3_BUCKET_NAME}'${NC}"
-    echo "   Verify bucket name and permissions."
-    exit 1
-fi
-
-echo -e "${GREEN}✓ S3 bucket accessible${NC}"
 
 if [ -z "${TRANSPARENCY_API_KEY}" ]; then
     echo -e "${YELLOW}⚠️  Warning: TRANSPARENCY_API_KEY not set in environment${NC}"
@@ -190,9 +225,22 @@ echo ""
 echo "============================================================"
 echo "📋 Ingestion Plan"
 echo "============================================================"
-echo "1. Bronze I - IBGE (SIDRA) -> S3"
-echo "2. Bronze II - Transparency Portal -> S3"
-echo "3. Bronze III - Inflation (BCB IPCA) -> S3"
+if [ "${STORAGE_MODE}" = "local-only" ]; then
+    echo "Storage: Local filesystem only"
+    echo "1. Bronze I - IBGE (SIDRA) -> Local"
+    echo "2. Bronze II - Transparency Portal -> Local"
+    echo "3. Bronze III - Inflation (BCB IPCA) -> Local"
+elif [ "${STORAGE_MODE}" = "both" ]; then
+    echo "Storage: Local + S3 (hybrid)"
+    echo "1. Bronze I - IBGE (SIDRA) -> Local + S3"
+    echo "2. Bronze II - Transparency Portal -> Local + S3"
+    echo "3. Bronze III - Inflation (BCB IPCA) -> Local + S3"
+else
+    echo "Storage: S3 only"
+    echo "1. Bronze I - IBGE (SIDRA) -> S3"
+    echo "2. Bronze II - Transparency Portal -> S3"
+    echo "3. Bronze III - Inflation (BCB IPCA) -> S3"
+fi
 echo "============================================================"
 echo ""
 

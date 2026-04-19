@@ -219,6 +219,43 @@
       },
       "primary_key": "state_code"
     },
+    "gold_analysis_compliance_municipality": {
+      "description": "Municipality-level analysis-ready compliance dataset for city statistical and ML analysis (Gold layer)",
+      "source_silver": [
+        "silver/dim_municipalities",
+        "silver/fact_population",
+        "silver/fact_literacy",
+        "silver/fact_income",
+        "silver/fact_sanctions",
+        "silver/fact_federal_transfers"
+      ],
+      "output_path": "gold/analysis_compliance_municipality",
+      "columns": {
+        "municipality_code": {"type": "string", "description": "7-digit IBGE municipality code"},
+        "municipality_name": {"type": "string", "description": "Municipality name"},
+        "state_code": {"type": "string", "description": "2-digit state code"},
+        "state_name": {"type": "string", "description": "State name"},
+        "region_code": {"type": "string", "description": "Region code (1-5)"},
+        "region_name": {"type": "string", "description": "Region name"},
+        "population_2022": {"type": "integer", "description": "Population 2022", "nullable": true},
+        "literacy_rate_2022": {"type": "float", "description": "Literacy rate 2022 (%)", "nullable": true},
+        "avg_income_2022": {"type": "float", "description": "Average nominal income 2022 (BRL)", "nullable": true},
+        "avg_income_real_2022_2022_brl": {"type": "float", "description": "Average income 2022 in 2022 BRL", "nullable": true},
+        "n_sanctions": {"type": "integer", "description": "Total sanctions count"},
+        "n_sanctions_ceis": {"type": "integer", "description": "CEIS sanctions count"},
+        "n_sanctions_cnep": {"type": "integer", "description": "CNEP sanctions count"},
+        "n_sanctions_cepim": {"type": "integer", "description": "CEPIM sanctions count"},
+        "total_transfers": {"type": "float", "description": "Total transfer amount across available records (BRL)"},
+        "n_transfer_records": {"type": "integer", "description": "Transfer records count"},
+        "sanctions_per_100k": {"type": "float", "description": "Sanctions per 100k population", "nullable": true},
+        "avg_transfer_per_capita": {"type": "float", "description": "Average transfers per capita (BRL)", "nullable": true},
+        "sanctions_per_million_brl_transfers": {"type": "float", "description": "Sanctions per million BRL of transfers", "nullable": true},
+        "log_population": {"type": "float", "description": "Log-transformed population", "nullable": true},
+        "log_income": {"type": "float", "description": "Log-transformed real income", "nullable": true},
+        "log_total_transfers": {"type": "float", "description": "Log-transformed total transfers", "nullable": true}
+      },
+      "primary_key": "municipality_code"
+    },
     "gold_consolidated_clustering": {
       "description": "Consolidated municipality-level dataset for K-means clustering and PCA (Gold layer)",
       "source_silver": ["silver/dim_municipalities", "silver/fact_population", "silver/fact_literacy", "silver/fact_income", "silver/fact_sanitation"],

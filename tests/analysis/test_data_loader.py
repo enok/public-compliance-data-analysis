@@ -26,6 +26,7 @@ class TestGoldDataLoader:
             'state_summary',
             'sanctions_summary',
             'analysis_compliance',
+            'analysis_compliance_municipality',
             'consolidated_clustering',
         ]
         for name in expected:
@@ -34,7 +35,7 @@ class TestGoldDataLoader:
     def test_list_available_datasets(self, loader):
         """list_available_datasets returns the right keys."""
         datasets = loader.list_available_datasets()
-        assert len(datasets) >= 5
+        assert len(datasets) >= 6
         assert 'analysis_compliance' in datasets
 
     def test_load_unknown_dataset_returns_none(self, loader):
