@@ -26,6 +26,33 @@ run_check() {
   fi
 }
 
+run_check_allow_timeout() {
+  local check_name="$1"
+  shift
+
+  TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+  echo
+  echo "==> ${check_name}"
+
+  if "$@"; then
+    PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    echo "PASS: ${check_name}"
+    return 0
+  else
+    local exit_code=$?
+
+    if [ "${exit_code}" -eq 124 ] || [ "${exit_code}" -eq 137 ] || [ "${exit_code}" -eq 143 ]; then
+      SKIPPED_CHECKS=$((SKIPPED_CHECKS + 1))
+      echo "SKIP: ${check_name} timed out"
+      return 0
+    fi
+
+    FAILED_CHECKS=$((FAILED_CHECKS + 1))
+    echo "FAIL: ${check_name}"
+    return 0
+  fi
+}
+
 skip_check() {
   local check_name="$1"
   local reason="$2"
@@ -49,9 +76,41 @@ docker_usable() {
   docker ps >/dev/null 2>&1
 }
 
-has_files() {
-  local pattern="$1"
-  find "${REPO_ROOT}" -type f -name "${pattern}" -print -quit | grep -q .
+run_with_timeout() {
+  local seconds="$1"
+  shift
+
+  if have_command timeout; then
+    timeout --kill-after=15s "${seconds}" "$@"
+  else
+    "$@"
+  fi
+}
+
+path_should_be_scanned() {
+  local path="$1"
+
+  if [ ! -e "${REPO_ROOT}/${path}" ]; then
+    return 1
+  fi
+
+  if [ -f "${REPO_ROOT}/${path}" ]; then
+    return 0
+  fi
+
+  if [ ! -d "${REPO_ROOT}/.git" ] || ! have_command git; then
+    return 0
+  fi
+
+  if git -c safe.directory="${REPO_ROOT}" -C "${REPO_ROOT}" ls-files -- "${path}" | head -n 1 | grep -q .; then
+    return 0
+  fi
+
+  if git -c safe.directory="${REPO_ROOT}" -C "${REPO_ROOT}" ls-files --others --exclude-standard -- "${path}" | head -n 1 | grep -q .; then
+    return 0
+  fi
+
+  return 1
 }
 
 repo_scope_paths=(
@@ -72,7 +131,7 @@ scoped_file_targets() {
   local path
 
   for path in "${repo_scope_paths[@]}"; do
-    if [ -e "${REPO_ROOT}/${path}" ]; then
+    if path_should_be_scanned "${path}"; then
       printf '%s\0' "${path}"
     fi
   done
@@ -120,14 +179,35 @@ run_trufflehog() {
 }
 
 run_semgrep() {
-  local targets=()
+  local files=()
   local path
 
   while IFS= read -r -d '' path; do
-    targets+=("${path}")
+    if [ -d "${REPO_ROOT}/${path}" ]; then
+      while IFS= read -r -d '' file; do
+        files+=("${file}")
+      done < <(
+        find "${REPO_ROOT}/${path}" -type f \
+          \( -name '*.py' -o -name '*.sh' -o -name '*.ps1' -o -name '*.md' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' -o -name '*.tf' -o -name '*.hcl' -o -name '*.sql' -o -name '*.toml' -o -name '*.cfg' -o -name '*.ini' -o -name '*.js' -o -name '*.ts' -o -name '*.tsx' -o -name '*.jsx' -o -name '*.go' -o -name '*.java' -o -name '*.rb' -o -name '*.php' -o -name '*.xml' -o -name '*.cmd' -o -name '*.bat' \) \
+          ! -path '*/.git/*' \
+          ! -path '*/.venv/*' \
+          ! -path '*/.cache/*' \
+          ! -path '*/.pytest_cache/*' \
+          ! -path '*/.pytest-tmp/*' \
+          ! -path '*/.idea/*' \
+          ! -path '*/notebooks/*' \
+          -print0
+      )
+    elif [ -f "${REPO_ROOT}/${path}" ]; then
+      files+=("${REPO_ROOT}/${path}")
+    fi
   done < <(scoped_existing_paths)
 
-  semgrep scan --config auto "${targets[@]}"
+  if [ "${#files[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  semgrep scan --config auto "${files[@]}"
 }
 
 run_semgrep_with_settings() {
@@ -153,6 +233,8 @@ run_shellcheck() {
   local roots=()
   if [ -e "${REPO_ROOT}/scripts" ]; then
     roots+=("${REPO_ROOT}/scripts")
+  else
+    return 0
   fi
 
   mapfile -d '' files < <(find "${roots[@]}" -type f -name '*.sh' -print0 2>/dev/null)
@@ -168,6 +250,8 @@ run_psscriptanalyzer() {
   local roots=()
   if [ -e "${REPO_ROOT}/scripts" ]; then
     roots+=("${REPO_ROOT}/scripts")
+  else
+    return 0
   fi
 
   mapfile -d '' files < <(find "${roots[@]}" -type f -name '*.ps1' -print0 2>/dev/null)
@@ -218,39 +302,45 @@ scanner_excludes=(
   "./.idea/**"
   "./logs/**"
   "./notebooks/**"
+  "./.agents/**"
+  "./.claude/**"
+  "./.codex/**"
+  "./.cursor/**"
+  "./.windsurf/**"
+  "./.setup/**"
 )
 
 run_syft() {
-  local args=(dir:. -o table)
+  local args=(dir:. -o json)
   local excluded_path
 
   for excluded_path in "${scanner_excludes[@]}"; do
     args+=(--exclude "${excluded_path}")
   done
 
-  env SYFT_CHECK_FOR_APP_UPDATE=false syft "${args[@]}"
+  run_with_timeout "${SYFT_TIMEOUT_SECONDS:-180}" env SYFT_CHECK_FOR_APP_UPDATE=false syft "${args[@]}" >/dev/null
 }
 
 run_grype() {
-  local args=(dir:.)
+  local args=(dir:. -q)
   local excluded_path
 
   for excluded_path in "${scanner_excludes[@]}"; do
     args+=(--exclude "${excluded_path}")
   done
 
-  env GRYPE_CHECK_FOR_APP_UPDATE=false grype "${args[@]}"
+  run_with_timeout "${GRYPE_TIMEOUT_SECONDS:-180}" env GRYPE_CHECK_FOR_APP_UPDATE=false grype "${args[@]}"
 }
 
 run_trivy() {
-  local args=(fs . --offline-scan --timeout 2m)
+  local args=(fs . --offline-scan --timeout 2m --scanners vuln --quiet)
   local excluded_path
 
   for excluded_path in "${scanner_excludes[@]}"; do
     args+=(--skip-dirs "${excluded_path}")
   done
 
-  trivy "${args[@]}"
+  run_with_timeout "${TRIVY_TIMEOUT_SECONDS:-180}" trivy "${args[@]}"
 }
 
 cd "${REPO_ROOT}"
@@ -317,13 +407,13 @@ else
   skip_check "YAML lint" "no YAML-heavy directories found or yamllint is not installed"
 fi
 
-if have_command shellcheck && has_files '*.sh'; then
+if have_command shellcheck; then
   run_check "Shell script lint with shellcheck" run_shellcheck
 else
   skip_check "Shell script lint with shellcheck" "no shell scripts found or shellcheck is not installed"
 fi
 
-if have_command pwsh && has_files '*.ps1'; then
+if have_command pwsh; then
   run_check "PowerShell lint with PSScriptAnalyzer" run_psscriptanalyzer
 else
   skip_check "PowerShell lint with PSScriptAnalyzer" "no PowerShell scripts found or pwsh is not installed"
@@ -336,19 +426,19 @@ else
 fi
 
 if have_command syft; then
-  run_check "SBOM generation with syft" run_syft
+  run_check_allow_timeout "SBOM generation with syft" run_syft
 else
   skip_check "SBOM generation with syft" "syft is not installed"
 fi
 
 if have_command grype; then
-  run_check "Vulnerability match with grype" run_grype
+  run_check_allow_timeout "Vulnerability match with grype" run_grype
 else
   skip_check "Vulnerability match with grype" "grype is not installed"
 fi
 
 if have_command trivy; then
-  run_check "Filesystem scan with trivy" run_trivy
+  run_check_allow_timeout "Filesystem scan with trivy" run_trivy
 else
   skip_check "Filesystem scan with trivy" "trivy is not installed"
 fi

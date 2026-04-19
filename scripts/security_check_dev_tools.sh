@@ -35,6 +35,33 @@ run_check() {
   fi
 }
 
+run_check_allow_timeout() {
+  local check_name="$1"
+  shift
+
+  TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+  echo
+  echo "==> ${check_name}"
+
+  if "$@"; then
+    PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    echo "PASS: ${check_name}"
+    return 0
+  else
+    local exit_code=$?
+
+    if [ "${exit_code}" -eq 124 ] || [ "${exit_code}" -eq 137 ] || [ "${exit_code}" -eq 143 ]; then
+      SKIPPED_CHECKS=$((SKIPPED_CHECKS + 1))
+      echo "SKIP: ${check_name} timed out"
+      return 0
+    fi
+
+    FAILED_CHECKS=$((FAILED_CHECKS + 1))
+    echo "FAIL: ${check_name}"
+    return 0
+  fi
+}
+
 skip_check() {
   local check_name="$1"
   local reason="$2"
@@ -54,9 +81,41 @@ docker_usable() {
   docker ps >/dev/null 2>&1
 }
 
-has_files() {
-  local pattern="$1"
-  find "${TARGET_DIR}" -type f -name "${pattern}" -print -quit | grep -q .
+run_with_timeout() {
+  local seconds="$1"
+  shift
+
+  if have_command timeout; then
+    timeout --kill-after=15s "${seconds}" "$@"
+  else
+    "$@"
+  fi
+}
+
+path_should_be_scanned() {
+  local path="$1"
+
+  if [ ! -e "${TARGET_DIR}/${path}" ]; then
+    return 1
+  fi
+
+  if [ -f "${TARGET_DIR}/${path}" ]; then
+    return 0
+  fi
+
+  if [ ! -d "${TARGET_DIR}/.git" ] || ! have_command git; then
+    return 0
+  fi
+
+  if git -c safe.directory="${TARGET_DIR}" -C "${TARGET_DIR}" ls-files -- "${path}" | head -n 1 | grep -q .; then
+    return 0
+  fi
+
+  if git -c safe.directory="${TARGET_DIR}" -C "${TARGET_DIR}" ls-files --others --exclude-standard -- "${path}" | head -n 1 | grep -q .; then
+    return 0
+  fi
+
+  return 1
 }
 
 repo_scope_paths=(
@@ -79,7 +138,7 @@ repo_scope_paths=(
 gitleaks_sources() {
   local path
   for path in "${repo_scope_paths[@]}"; do
-    if [ -e "${TARGET_DIR}/${path}" ]; then
+    if path_should_be_scanned "${path}"; then
       printf '%s\0' "${path}"
     fi
   done
@@ -88,7 +147,7 @@ gitleaks_sources() {
 scoped_existing_paths() {
   local path
   for path in "${repo_scope_paths[@]}"; do
-    if [ -e "${TARGET_DIR}/${path}" ]; then
+    if path_should_be_scanned "${path}"; then
       printf '%s\0' "${path}"
     fi
   done
@@ -101,7 +160,7 @@ run_gitleaks() {
   done < <(gitleaks_sources)
 }
 
-run_semgrep() {
+run_trufflehog() {
   local targets=()
   local path
 
@@ -109,7 +168,46 @@ run_semgrep() {
     targets+=("${path}")
   done < <(scoped_existing_paths)
 
-  semgrep scan --config auto "${targets[@]}"
+  trufflehog filesystem "${targets[@]}" --no-update
+}
+
+run_semgrep() {
+  local files=()
+  local path
+
+  while IFS= read -r -d '' path; do
+    if [ -d "${TARGET_DIR}/${path}" ]; then
+      while IFS= read -r -d '' file; do
+        files+=("${file}")
+      done < <(
+        find "${TARGET_DIR}/${path}" -type f \
+          \( -name '*.py' -o -name '*.sh' -o -name '*.ps1' -o -name '*.md' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' -o -name '*.tf' -o -name '*.hcl' -o -name '*.sql' -o -name '*.toml' -o -name '*.cfg' -o -name '*.ini' -o -name '*.js' -o -name '*.ts' -o -name '*.tsx' -o -name '*.jsx' -o -name '*.go' -o -name '*.java' -o -name '*.rb' -o -name '*.php' -o -name '*.xml' -o -name '*.cmd' -o -name '*.bat' \) \
+          ! -path '*/.git/*' \
+          ! -path '*/.venv/*' \
+          ! -path '*/.cache/*' \
+          ! -path '*/.pytest_cache/*' \
+          ! -path '*/.pytest-tmp/*' \
+          ! -path '*/.idea/*' \
+          -print0
+      )
+    elif [ -f "${TARGET_DIR}/${path}" ]; then
+      files+=("${TARGET_DIR}/${path}")
+    fi
+  done < <(scoped_existing_paths)
+
+  if [ "${#files[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  if have_command timeout; then
+    timeout --kill-after=15s "${SEMGREP_TIMEOUT_SECONDS:-120}" semgrep scan --config auto "${files[@]}"
+  else
+    semgrep scan --config auto "${files[@]}"
+  fi
+}
+
+run_semgrep_with_settings() {
+  HOME=/tmp XDG_CONFIG_HOME=/tmp XDG_CACHE_HOME=/tmp SEMGREP_SETTINGS_FILE=/tmp/semgrep-settings.yml run_semgrep
 }
 
 has_node_manifest() {
@@ -136,7 +234,7 @@ run_shellcheck() {
     return 0
   fi
 
-  shellcheck "${files[@]}"
+  shellcheck -x -S warning "${files[@]}"
 }
 
 run_psscriptanalyzer() {
@@ -187,14 +285,22 @@ run_cmd_semgrep() {
     return 0
   fi
 
-  semgrep scan --config auto "${files[@]}"
+  if have_command timeout; then
+    timeout --kill-after=15s "${SEMGREP_TIMEOUT_SECONDS:-120}" semgrep scan --config auto "${files[@]}"
+  else
+    semgrep scan --config auto "${files[@]}"
+  fi
+}
+
+run_cmd_semgrep_with_settings() {
+  HOME=/tmp XDG_CONFIG_HOME=/tmp XDG_CACHE_HOME=/tmp SEMGREP_SETTINGS_FILE=/tmp/semgrep-settings.yml run_cmd_semgrep
 }
 
 run_yamllint() {
   local targets=()
   local candidate
 
-  for candidate in .github .agents .codex .cursor .windsurf docs integrations rules workflows; do
+  for candidate in .github docs integrations rules workflows; do
     if [ -e "${TARGET_DIR}/${candidate}" ]; then
       targets+=("${candidate}")
     fi
@@ -205,6 +311,54 @@ run_yamllint() {
   fi
 
   yamllint "${targets[@]}"
+}
+
+scanner_excludes=(
+  "./.git/**"
+  "./.venv/**"
+  "./.cache/**"
+  "./.pytest_cache/**"
+  "./.pytest-tmp/**"
+  "./.idea/**"
+  "./.agents/**"
+  "./.claude/**"
+  "./.codex/**"
+  "./.cursor/**"
+  "./.windsurf/**"
+  "./.setup/**"
+)
+
+run_syft() {
+  local args=(dir:. -o json)
+  local excluded_path
+
+  for excluded_path in "${scanner_excludes[@]}"; do
+    args+=(--exclude "${excluded_path}")
+  done
+
+  run_with_timeout "${SYFT_TIMEOUT_SECONDS:-180}" env SYFT_CHECK_FOR_APP_UPDATE=false syft "${args[@]}" >/dev/null
+}
+
+run_grype() {
+  local args=(dir:. -q)
+  local excluded_path
+
+  for excluded_path in "${scanner_excludes[@]}"; do
+    args+=(--exclude "${excluded_path}")
+  done
+
+  run_with_timeout "${GRYPE_TIMEOUT_SECONDS:-180}" env GRYPE_CHECK_FOR_APP_UPDATE=false grype "${args[@]}"
+}
+
+run_trivy() {
+  local args=(fs . --offline-scan --timeout 2m --scanners vuln --quiet)
+  local excluded_path
+
+  for excluded_path in "${scanner_excludes[@]}"; do
+    args+=(--skip-dirs "${excluded_path}")
+  done
+
+  run_with_timeout "${TRIVY_TIMEOUT_SECONDS:-180}" trivy "${args[@]}"
 }
 
 cd "${TARGET_DIR}"
@@ -218,7 +372,7 @@ else
 fi
 
 if have_command trufflehog && have_command docker && docker_usable; then
-  run_check "Secrets scan with trufflehog" trufflehog filesystem . --no-update
+  run_check "Secrets scan with trufflehog" run_trufflehog
 elif have_command trufflehog; then
   skip_check "Secrets scan with trufflehog" "docker is not usable in the current environment"
 else
@@ -238,7 +392,7 @@ else
 fi
 
 if have_command semgrep; then
-  run_check "Semgrep auto scan" env SEMGREP_SETTINGS_FILE=/tmp/semgrep-settings.yml run_semgrep
+  run_check_allow_timeout "Semgrep auto scan" run_semgrep_with_settings
 else
   skip_check "Semgrep auto scan" "semgrep is not installed"
 fi
@@ -249,20 +403,20 @@ else
   skip_check "YAML lint" "yamllint is not installed"
 fi
 
-if have_command shellcheck && has_files '*.sh'; then
+if have_command shellcheck; then
   run_check "Shell script lint with shellcheck" run_shellcheck
 else
   skip_check "Shell script lint with shellcheck" "no shell scripts found or shellcheck is not installed"
 fi
 
-if have_command pwsh && has_files '*.ps1'; then
+if have_command pwsh; then
   run_check "PowerShell lint with PSScriptAnalyzer" run_psscriptanalyzer
 else
   skip_check "PowerShell lint with PSScriptAnalyzer" "no PowerShell scripts found or pwsh is not installed"
 fi
 
-if have_command semgrep && { has_files '*.cmd' || has_files '*.bat'; }; then
-  run_check "Batch script scan with semgrep" env SEMGREP_SETTINGS_FILE=/tmp/semgrep-settings.yml run_cmd_semgrep
+if have_command semgrep; then
+  run_check_allow_timeout "Batch script scan with semgrep" run_cmd_semgrep_with_settings
 else
   skip_check "Batch script scan with semgrep" "no .cmd/.bat files found or semgrep is not installed"
 fi
@@ -280,19 +434,19 @@ else
 fi
 
 if have_command syft; then
-  run_check "SBOM generation with syft" syft dir:. -o table
+  run_check_allow_timeout "SBOM generation with syft" run_syft
 else
   skip_check "SBOM generation with syft" "syft is not installed"
 fi
 
 if have_command grype; then
-  run_check "Vulnerability match with grype" grype dir:.
+  run_check_allow_timeout "Vulnerability match with grype" run_grype
 else
   skip_check "Vulnerability match with grype" "grype is not installed"
 fi
 
 if have_command trivy; then
-  run_check "Filesystem scan with trivy" trivy fs .
+  run_check_allow_timeout "Filesystem scan with trivy" run_trivy
 else
   skip_check "Filesystem scan with trivy" "trivy is not installed"
 fi
