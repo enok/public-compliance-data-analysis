@@ -3,6 +3,7 @@ import boto3
 import json
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from botocore.exceptions import ClientError
 
@@ -162,11 +163,41 @@ class IBGEIngestor:
     def run_full_ingestion(self):
         """
         Iterates through the configured metadata and performs the raw data dump to S3.
+
+        Datasets are fetched in parallel via a thread pool. Each task is an independent
+        HTTP GET + S3 PUT, so concurrency is safe. Controlled via the IBGE_MAX_WORKERS
+        env var (default: min(6, number_of_datasets)). Set to 1 to force serial mode.
         """
         base_url = self.config['api_base_url']
+        datasets = self._get_selected_datasets()
 
-        for ds in self._get_selected_datasets():
-            self._ingest_dataset(base_url, ds)
+        if not datasets:
+            return
+
+        try:
+            requested_workers = int(os.getenv("IBGE_MAX_WORKERS", "6"))
+        except ValueError:
+            requested_workers = 6
+        max_workers = max(1, min(requested_workers, len(datasets)))
+
+        if max_workers == 1 or len(datasets) == 1:
+            for ds in datasets:
+                self._ingest_dataset(base_url, ds)
+            return
+
+        logger.info(f"🧵 Running IBGE ingestion with {max_workers} parallel workers "
+                    f"({len(datasets)} dataset(s))")
+        with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="ibge") as pool:
+            futures = {
+                pool.submit(self._ingest_dataset, base_url, ds): ds.get("name", "<unknown>")
+                for ds in datasets
+            }
+            for future in as_completed(futures):
+                name = futures[future]
+                try:
+                    future.result()
+                except Exception as exc:
+                    logger.error(f"❌ Worker for {name} raised: {exc}")
 
 if __name__ == "__main__":
     # AWS Configuration - Update bucket name as needed

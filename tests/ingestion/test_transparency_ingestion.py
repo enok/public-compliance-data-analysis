@@ -3,6 +3,9 @@ import sys
 import json
 import logging
 import tempfile
+import threading
+import time
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 from pathlib import Path
 from dotenv import load_dotenv
@@ -249,10 +252,205 @@ def test_run_full_ingestion_returns_false_when_datasets_fail(transparency_config
     monkeypatch.delenv("TRANSPARENCY_DATASET_NAMES", raising=False)
     ingestor = build_test_ingestor(transparency_config_file)
     ingestor._run_single_ingestion = MagicMock(return_value=False)
+    ingestor._prefetch_metadata_index = MagicMock(return_value={})
 
     success = ingestor.run_full_ingestion(max_retry_rounds=1)
 
     assert success is False
+
+
+def test_is_month_historical_flags_old_months(transparency_config_file, monkeypatch):
+    monkeypatch.delenv("TRANSPARENCY_FORCE_REFRESH", raising=False)
+    monkeypatch.delenv("TRANSPARENCY_FROZEN_MONTHS_BACK", raising=False)
+    ingestor = build_test_ingestor(transparency_config_file)
+
+    # 2014 data, evaluated "now" = mid-2026: > 6 months old -> historical.
+    assert ingestor._is_month_historical(
+        {"mesAnoFim": "06/2014"},
+        now=datetime(2026, 4, 19),
+    ) is True
+
+    # A recent month (2 months ago) is NOT historical yet.
+    assert ingestor._is_month_historical(
+        {"mesAnoFim": "02/2026"},
+        now=datetime(2026, 4, 19),
+    ) is False
+
+
+def test_is_month_historical_respects_force_refresh(transparency_config_file, monkeypatch):
+    monkeypatch.setenv("TRANSPARENCY_FORCE_REFRESH", "1")
+    ingestor = build_test_ingestor(transparency_config_file)
+
+    # Even very old months are treated as non-historical when force-refresh is on.
+    assert ingestor._is_month_historical(
+        {"mesAnoFim": "01/2010"},
+        now=datetime(2026, 4, 19),
+    ) is False
+
+
+def test_is_month_historical_disabled_when_cutoff_zero(transparency_config_file, monkeypatch):
+    monkeypatch.delenv("TRANSPARENCY_FORCE_REFRESH", raising=False)
+    monkeypatch.setenv("TRANSPARENCY_FROZEN_MONTHS_BACK", "0")
+    ingestor = build_test_ingestor(transparency_config_file)
+
+    # Setting cutoff to zero disables the optimization entirely.
+    assert ingestor._is_month_historical(
+        {"mesAnoFim": "01/2010"},
+        now=datetime(2026, 4, 19),
+    ) is False
+
+
+def test_run_single_ingestion_skips_historical_month_without_probe(transparency_config_file, monkeypatch, tmp_path):
+    """Completed historical months must not issue a live CGU probe."""
+    monkeypatch.delenv("TRANSPARENCY_FORCE_REFRESH", raising=False)
+    monkeypatch.delenv("TRANSPARENCY_FROZEN_MONTHS_BACK", raising=False)
+    ingestor = build_test_ingestor(transparency_config_file)
+    # Redirect the skip cache to an isolated tmp dir so no other test's cached
+    # "skipped_up_to_date" entry for this key can short-circuit the logic we're testing.
+    from src.ingestion.ingestion_utils import SkipMarkerCache
+    ingestor.skip_cache = SkipMarkerCache(scope="transparency", cache_root=tmp_path / "skip_cache")
+    unique_filename = "federal_transfers_hist_skip_probe_test.json"
+    ingestor.fetch_with_retry = MagicMock()
+    ingestor._get_metadata = MagicMock(
+        return_value={"status": "completed", "last_page": 3, "total_records": 42}
+    )
+    ingestor._is_month_historical = MagicMock(return_value=True)
+
+    result = ingestor._run_single_ingestion(
+        "federal_transfers_hist_skip_probe_test",
+        "https://api.portaldatransparencia.gov.br/api-de-dados/despesas/recursos-recebidos",
+        {"mesAnoInicio": "06/2014", "mesAnoFim": "06/2014"},
+        unique_filename,
+        True,
+    )
+
+    assert result is True
+    ingestor.fetch_with_retry.assert_not_called()
+    ingestor._is_month_historical.assert_called_once()
+
+
+def test_run_single_ingestion_uses_prefetched_metadata(transparency_config_file, monkeypatch):
+    """When prefetched metadata is supplied, no per-dataset S3 GetObject is issued."""
+    monkeypatch.delenv("TRANSPARENCY_FORCE_REFRESH", raising=False)
+    ingestor = build_test_ingestor(transparency_config_file)
+    # Unique filename isolates the on-disk skip cache from sibling tests.
+    unique_filename = "federal_transfers_prefetched_meta_test.json"
+    ingestor._get_metadata = MagicMock()  # should NOT be called
+    ingestor.fetch_with_retry = MagicMock()
+    ingestor._is_month_historical = MagicMock(return_value=True)
+
+    metadata_key = f"bronze/transparency/.metadata/{unique_filename}.meta.json"
+    prefetched = {
+        metadata_key: {"status": "completed", "last_page": 5, "total_records": 123}
+    }
+
+    result = ingestor._run_single_ingestion(
+        "federal_transfers_prefetched_meta_test",
+        "https://api.portaldatransparencia.gov.br/api-de-dados/despesas/recursos-recebidos",
+        {"mesAnoInicio": "06/2014", "mesAnoFim": "06/2014"},
+        unique_filename,
+        True,
+        prefetched,
+    )
+
+    assert result is True
+    ingestor._get_metadata.assert_not_called()
+    ingestor.fetch_with_retry.assert_not_called()
+
+
+def test_token_bucket_rate_limiter_allows_burst_immediately():
+    """Initial burst tokens are available without blocking."""
+    from src.ingestion.ingestion_utils import TokenBucketRateLimiter
+
+    limiter = TokenBucketRateLimiter(requests_per_minute=60)
+    start = time.monotonic()
+    limiter.acquire()  # should return immediately from initial burst
+    elapsed = time.monotonic() - start
+    assert elapsed < 0.1, f"First acquire took {elapsed:.3f}s; expected instant (burst)"
+
+
+def test_token_bucket_rate_limiter_throttles_on_depletion():
+    """Once burst is exhausted, the next acquire waits ~1/rate seconds."""
+    from src.ingestion.ingestion_utils import TokenBucketRateLimiter
+
+    # 60 req/min = 1 req/sec; burst=1
+    limiter = TokenBucketRateLimiter(requests_per_minute=60, burst_size=1)
+    limiter.acquire()  # consume burst
+
+    start = time.monotonic()
+    limiter.acquire()  # must wait ~1s for next token
+    elapsed = time.monotonic() - start
+    # Allow ±40% tolerance for CI timing variance
+    assert 0.6 <= elapsed <= 1.4, f"Second acquire took {elapsed:.3f}s; expected ~1s"
+
+
+def test_token_bucket_rate_limiter_is_thread_safe():
+    """Multiple threads sharing one limiter stay within the declared rate."""
+    from src.ingestion.ingestion_utils import TokenBucketRateLimiter
+
+    # 300 req/min = 5 req/sec; 10 threads racing for 10 tokens
+    limiter = TokenBucketRateLimiter(requests_per_minute=300, burst_size=10)
+    results = []
+    barrier = threading.Barrier(10)
+
+    def worker():
+        barrier.wait()
+        t0 = time.monotonic()
+        limiter.acquire()
+        results.append(time.monotonic() - t0)
+
+    threads = [threading.Thread(target=worker) for _ in range(10)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    # All 10 acquires should succeed (no deadlock, no exception)
+    assert len(results) == 10
+
+
+def test_transparency_ingestor_rate_limiter_uses_env_override(transparency_config_file, monkeypatch):
+    """TRANSPARENCY_REQUESTS_PER_MINUTE env var is picked up by the ingestor."""
+    monkeypatch.setenv("TRANSPARENCY_REQUESTS_PER_MINUTE", "120")
+    ingestor = build_test_ingestor(transparency_config_file)
+    # 120 req/min = 2 req/sec
+    assert abs(ingestor._rate_limiter._rate_per_second - 2.0) < 1e-9
+
+
+def test_prefetch_metadata_index_collects_only_meta_json(transparency_config_file):
+    """Prefetch must filter out non-.meta.json objects and parse JSON bodies."""
+    ingestor = build_test_ingestor(transparency_config_file)
+
+    # Mock paginator returning two .meta.json keys and one noise file.
+    paginator = MagicMock()
+    paginator.paginate.return_value = [
+        {
+            "Contents": [
+                {"Key": "bronze/transparency/.metadata/ceis_compliance.json.meta.json"},
+                {"Key": "bronze/transparency/.metadata/noise.log"},
+                {"Key": "bronze/transparency/.metadata/cnep_compliance.json.meta.json"},
+            ]
+        }
+    ]
+    ingestor.s3.get_paginator = MagicMock(return_value=paginator)
+
+    def fake_get(Bucket, Key):
+        body = MagicMock()
+        body.read.return_value = json.dumps(
+            {"status": "completed", "_key": Key}
+        ).encode("utf-8")
+        return {"Body": body}
+
+    ingestor.s3.get_object.side_effect = fake_get
+
+    result = ingestor._prefetch_metadata_index()
+
+    assert set(result.keys()) == {
+        "bronze/transparency/.metadata/ceis_compliance.json.meta.json",
+        "bronze/transparency/.metadata/cnep_compliance.json.meta.json",
+    }
+    for meta in result.values():
+        assert meta["status"] == "completed"
 
 def test_api_connectivity():
     """Test basic API connectivity without S3 upload."""

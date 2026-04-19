@@ -1,6 +1,6 @@
 # STEP 2: SILVER LAYER - Data Transformation
 
-**Last Updated:** 2026-04-07 (UTC-03:00)  
+**Last Updated:** 2026-04-19 (UTC-03:00)  
 **Project:** Public Compliance Data Analysis (MBA Thesis)  
 **Primary Entrypoint:** `scripts/02_silver_transformation.sh`
 
@@ -180,7 +180,7 @@ pytest tests/processing/test_smart_caching.py -v
 pytest tests/processing/test_silver_integration.py -v
 ```
 
-Current repository total: `117` collected tests (`pytest --collect-only -q tests`, 2026-04-07).
+Current repository total: `140` collected tests, `137 passed, 3 skipped` (`pytest tests/ -q`, 2026-04-19).
 
 ---
 

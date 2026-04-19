@@ -488,6 +488,8 @@ def build_state_geojson_from_shapefile(
                 "geometry": shape_record.shape.__geo_interface__,
             }
             features.append(feature)
+        
+        reader.close()  # Close before temp directory cleanup (Windows file lock fix)
 
     output_geojson_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {"type": "FeatureCollection", "features": features}

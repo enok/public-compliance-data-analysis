@@ -59,7 +59,7 @@ pytest tests/processing/test_gold_transformer.py -v
 pytest --collect-only -q tests
 ```
 
-Current snapshot (2026-04-07): `117 tests collected`.
+Current snapshot (2026-04-19): `140 tests collected`, `137 passed, 3 skipped`.
 
 ---
 

@@ -1,6 +1,6 @@
 # ETAPA 2: CAMADA SILVER - Transformação de Dados
 
-**Última Atualização:** 2026-04-07 (UTC-03:00)  
+**Última Atualização:** 2026-04-19 (UTC-03:00)  
 **Projeto:** Public Compliance Data Analysis (TCC MBA)  
 **Entrypoint Principal:** `scripts/02_silver_transformation.sh`
 
@@ -180,7 +180,7 @@ pytest tests/processing/test_smart_caching.py -v
 pytest tests/processing/test_silver_integration.py -v
 ```
 
-Total atual do repositório: `117` testes coletados (`pytest --collect-only -q tests`, 2026-04-07).
+Total atual do repositório: `140` testes coletados, `137 passed, 3 skipped` (`pytest tests/ -q`, 2026-04-19).
 
 ---
 

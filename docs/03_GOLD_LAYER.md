@@ -1,6 +1,6 @@
 # STEP 3: GOLD LAYER - Analytics & Aggregations
 
-**Last Updated:** 2026-04-08 (UTC-03:00)  
+**Last Updated:** 2026-04-19 (UTC-03:00)  
 **Project:** Public Compliance Data Analysis (MBA Thesis)  
 **Primary Entrypoint:** `scripts/03_gold_transformation.sh`
 
@@ -173,7 +173,7 @@ pytest tests/processing/test_gold_transformer.py -v
 pytest tests/processing/ -v
 ```
 
-Current repository total: `127` collected tests (`pytest --collect-only -q tests`, 2026-04-08).
+Current repository total: `140` collected tests, `137 passed, 3 skipped` (`pytest tests/ -q`, 2026-04-19).
 
 ---
 

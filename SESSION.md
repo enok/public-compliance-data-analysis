@@ -15,7 +15,7 @@ When work advances materially, update this file with:
 ## Repository
 
 - Path: `/mnt/hgfs/shared/data-science/tcc/code/public-compliance-data-analysis`
-- Date: `2026-04-06`
+- Date: `2026-04-19`
 
 ## Current Objective
 
@@ -23,7 +23,9 @@ When work advances materially, update this file with:
 2. ~~Revalidate suspicious early Transparency `no_data` checkpoints~~ — **done** (`2010-01`–`2013-11` reconfirmed empty; `2013-12` is first populated month)
 3. ~~Run Silver and Gold~~ — **done** (Silver confirmed up-to-date; Gold regenerated after caching bug fix)
 4. ~~Audit real outputs from Silver and Gold~~ — **done** (all tables verified)
-5. Expand Bronze with the next high-value source for the thesis, or begin notebook analysis
+5. ~~Fix bilingual notebook sync~~ — **done** (`04_clustering_analysis.pt-BR.ipynb` regenerated, 56KB → 11MB)
+6. ~~Create corruption vs HDI analysis~~ — **done** (Notebooks 06, scripts, GeoJSON, CSVs, local data)
+7. Thesis write-up and defense preparation
 
 ## Live Status
 
@@ -39,6 +41,85 @@ When work advances materially, update this file with:
   - Fiscal data can be re-added later if needed — the Siconfi API is public and stable
 
 ## What Was Completed In This Session
+
+### Bilingual Notebook Sync — 04_clustering_analysis.pt-BR.ipynb regenerated
+
+- **Issue**: `04_clustering_analysis.pt-BR.ipynb` was truncated (56KB vs 11MB EN version)
+- **Cause**: Previous pt-BR version only had sections 1-4.3, missing sections 5-7 (summary, cross-notebook synthesis, Brazil maps)
+- **Fix**: Executed bilingual-doc-sync workflow to regenerate pt-BR from EN version
+- **Result**: pt-BR notebook now 11MB with all 55 cells (15 markdown, 40 code) fully translated
+- **Validation**: File sizes now match (EN=11MB, pt-BR=11MB), structure verified
+
+### New Analysis Notebook — 05_corruption_hdi_clusters.ipynb
+
+**Purpose:** Test correlation between corruption/poor resource use (sanctions per million BRL transferred) and HDI indicators (income, literacy) WITHIN each K-means cluster.
+
+**Created files:**
+- `notebooks/05_corruption_hdi_clusters.ipynb` (EN version)
+- `notebooks/05_corrupcao_idh_clusters.ipynb` (pt-BR version)
+- `notebooks/06_complete_thesis_pipeline.ipynb` (EN: Complete ETL + Analysis + QGIS + Dashboard)
+- `notebooks/06_pipeline_tese_completo.ipynb` (pt-BR: Pipeline completo da tese)
+- `scripts/run_corruption_hdi_analysis.py` (executable Python script - English only)
+- `scripts/generate_map_geojson.py` (generates QGIS map - English only)
+
+**Analysis outputs:**
+1. **Correlation by cluster:** Pearson r and p-value for each cluster vs HDI variables
+2. **Vulnerability index:** Combined score (sanctions/transfer - HDI) for mapping
+3. **Representative sample:** Top 5 best/worst municipalities per cluster
+4. **GeoJSON for QGIS:** `brazil_municipalities_vulnerability_index.geojson`
+5. **Dashboard tables:**
+   - `correlation_by_cluster.csv`
+   - `representative_sample_cities.csv` / `amostra_representativa_cidades.csv`
+   - `cluster_summary.csv` / `resumo_por_cluster.csv`
+
+**Key features:**
+- Compares "apples to apples" using K-means clusters (similar municipalities)
+- Red/blue color scheme for map (red = high vulnerability, blue = good management)
+- Ready for QGIS visualization and Power BI dashboard
+- **Note:** Python code is English-only per project conventions; bilingual applies to docs/notebooks only
+
+### Final Validation — Workflow Complete
+
+**Security Check:**
+- Command: `./scripts/security_check_this_repo.sh`
+- Result: 0 failed, 15 skipped (no security issues)
+
+**Tests (with statsmodels installed):**
+- Command: `pytest tests/ -q`
+- Result: **137 passed, 3 skipped** (140 collected, 2026-04-19)
+
+**Data Inventory:**
+- Silver: 9 tables (dim_municipalities, dim_municipality_lookup, fact_population, fact_literacy, fact_income, fact_sanitation, fact_sanctions, fact_federal_transfers, dim_inflation_index)
+- Gold: 6 tables, 2.0MB (agg_municipality_socioeconomic, agg_state_summary, agg_sanctions_summary, analysis_compliance, analysis_compliance_municipality, consolidated_clustering)
+
+**Thesis Inputs Reference:**
+- `docs/THESIS_INPUTS.md` (EN)
+- `docs/THESIS_INPUTS.pt-BR.md` (pt-BR)
+- Contains: complete ETL documentation, notebook mapping to thesis chapters, dashboard recommendations, reproducibility instructions
+
+**Pre-Commit Checklist:**
+- [x] Security check passed (0 failed)
+- [x] Tests passed (137 passed, 3 skipped)
+- [x] Documentation updated (SESSION.md)
+- [x] Bilingual sync verified (notebooks: EN + pt-BR)
+- [x] No secrets/credentials in code
+- [x] Python scripts follow English-only convention
+- [x] CSV outputs have bilingual pairs
+
+**Files Ready for Commit:**
+```
+M  SESSION.md
+M  notebooks/04_clustering_analysis.pt-BR.ipynb
+?? notebooks/06_corrupcao_idh_clusters.ipynb
+?? notebooks/06_corruption_hdi_clusters.ipynb
+?? scripts/download_gold_data.py
+?? scripts/generate_map_geojson.py
+?? scripts/run_corruption_hdi_analysis.py
+?? docs/thesis_presentation_assets/qgis/brazil_municipalities_vulnerability_index.geojson
+?? docs/thesis_presentation_assets/*.csv
+?? docs/thesis_presentation_assets/*.json
+?? data/gold/*/data.parquet
+```
 
 ### 0. Bronze IV fiscal DCA — added then cancelled and fully reverted
 

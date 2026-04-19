@@ -4,6 +4,14 @@
 >
 > **Data scope**: 5,570 municipalities, 27 states, Census 2010/2022, Transparency Portal sanctions (CEIS, CNEP, CEPIM), inflation-adjusted income (IPCA, base 2022 BRL)
 
+> **⚠️ Grain update (revision adopted for thesis submission).** The primary analytical grain is now the **municipality** (N = 5,570) rather than the state (N = 27). Headline statistics below that reference N = 27 results (e.g. r = 0.74, R² = 0.835) reflect the earlier state-level analysis and are retained for contrast. The muni-level re-run (notebooks 01 – 03) gives the statistically honest effect sizes:
+>
+> - **Bivariate correlation income ↔ sanctions_per_100k (muni level): r ≈ 0.15** (p < 0.001, N = 5,570) — the strong r = 0.74 seen at the state grain was a small-N aggregation artifact.
+> - **OLS with log_income + literacy + log_population + region + log_total_transfers (muni level): R² ≈ 0.026, Adj-R² ≈ 0.025, F = 18.5, p(F) < 10⁻²⁷.** The model is jointly significant but explains only ~2.5% of per-muni variance in sanctions_per_100k.
+> - **Classification ("has at least one sanction", 22 / 78 class split): balanced Logistic Regression ROC-AUC ≈ 0.83, F1 ≈ 0.57** — the *binary* "did this muni ever show up in CEIS / CNEP / CEPIM?" is much more learnable than the *continuous* rate.
+> - **Data quality caveat.** Of 27,749 raw sanctions in Silver, only 7,773 (28 %) carry a `municipality_code` (CEPIM: 0 % geocoded, CEIS: 34 %, CNEP: 4 %). The state-level dataset preserves more sanctions (22,717) because federal registries record state reliably but not always municipality. Municipality-level findings are therefore conservative on the positive-class rate.
+> - **Interpretation shift.** The old "income strongly predicts sanctions per capita" headline becomes "income shows a *weak* positive muni-level association (r ≈ 0.15), and *whether* a municipality has any sanction at all is far more predictable than *how many*". The detection-capacity story (§ 1.2) still holds, but now rests on disaggregated evidence instead of the 27-state aggregate.
+
 ## 1. Summary of Findings
 
 This study investigated the relationship between socioeconomic indicators and public compliance sanctions across Brazilian states and municipalities. Four complementary analytical approaches were applied: exploratory data analysis, statistical inference, supervised machine learning, and unsupervised clustering. Together, they converge on a consistent set of findings.

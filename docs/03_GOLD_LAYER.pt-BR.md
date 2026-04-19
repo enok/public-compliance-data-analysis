@@ -1,6 +1,6 @@
 # ETAPA 3: CAMADA GOLD - Analytics e Agregações
 
-**Última Atualização:** 2026-04-08 (UTC-03:00)  
+**Última Atualização:** 2026-04-19 (UTC-03:00)  
 **Projeto:** Public Compliance Data Analysis (TCC MBA)  
 **Entrypoint Principal:** `scripts/03_gold_transformation.sh`
 
@@ -173,7 +173,7 @@ pytest tests/processing/test_gold_transformer.py -v
 pytest tests/processing/ -v
 ```
 
-Total atual do repositório: `127` testes coletados (`pytest --collect-only -q tests`, 2026-04-08).
+Total atual do repositório: `140` testes coletados, `137 passed, 3 skipped` (`pytest tests/ -q`, 2026-04-19).
 
 ---
 

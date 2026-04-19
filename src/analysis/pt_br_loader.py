@@ -27,7 +27,7 @@ import logging
 from typing import Dict, Optional
 import pandas as pd
 
-from src.analysis.data_loader import GoldDataLoader
+from src.analysis.local_data_loader import LocalGoldDataLoader
 from src.config.pt_br_translations import (
     DATASET_TRANSLATIONS,
     COLUMN_TRANSLATIONS,
@@ -38,25 +38,26 @@ from src.config.pt_br_translations import (
 logger = logging.getLogger(__name__)
 
 
-class GoldDataLoaderPtBr(GoldDataLoader):
+class GoldDataLoaderPtBr(LocalGoldDataLoader):
     """
-    Portuguese wrapper for GoldDataLoader.
+    Portuguese wrapper for LocalGoldDataLoader.
     
     Automatically translates dataset and column names to Portuguese.
     """
     
-    def __init__(self, bucket_name: str, aws_profile: Optional[str] = None,
-                 use_display_names: bool = False):
+    def __init__(self, bucket_name: Optional[str] = None, aws_profile: Optional[str] = None,
+                 use_display_names: bool = False, project_root = None):
         """
         Initialize Portuguese data loader.
         
         Args:
-            bucket_name: S3 bucket name
-            aws_profile: AWS profile name (optional)
+            bucket_name: S3 bucket name (optional, for backwards compatibility)
+            aws_profile: AWS profile name (optional, for backwards compatibility)
             use_display_names: If True, use display names (e.g., "Nome do Estado")
                              If False, use code-friendly names (e.g., "nome_estado")
+            project_root: Project root directory for local loading
         """
-        super().__init__(bucket_name, aws_profile)
+        super().__init__(project_root=project_root)
         self.use_display_names = use_display_names
         logger.info(f"📚 Portuguese loader initialized (display_names={use_display_names})")
     

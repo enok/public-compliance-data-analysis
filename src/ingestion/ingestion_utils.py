@@ -1,5 +1,6 @@
 import json
 import hashlib
+import threading
 import time
 import shutil
 from pathlib import Path
@@ -9,6 +10,61 @@ from botocore.exceptions import ClientError
 
 
 CONTENT_SHA256_METADATA_KEY = "content-sha256"
+
+
+class TokenBucketRateLimiter:
+    """
+    Thread-safe token-bucket rate limiter.
+
+    All parallel workers share a single instance. Each call to :meth:`acquire`
+    blocks until a token is available, keeping the aggregate request rate at or
+    below ``requests_per_minute`` regardless of the number of threads.
+
+    The bucket starts full (burst of up to ``burst_size`` tokens). New tokens
+    are added continuously at ``requests_per_minute / 60`` tokens per second.
+    Calling code does not need to sleep separately; this replaces the
+    ``rate_limit_delay`` sleep in individual workers.
+
+    Usage::
+
+        limiter = TokenBucketRateLimiter(requests_per_minute=280)
+        # Before every CGU API call:
+        limiter.acquire()
+        response = self.http_client.fetch(...)
+    """
+
+    def __init__(
+        self,
+        requests_per_minute: float,
+        burst_size: Optional[float] = None,
+    ) -> None:
+        if requests_per_minute <= 0:
+            raise ValueError("requests_per_minute must be positive")
+        self._rate_per_second: float = requests_per_minute / 60.0
+        # Default burst = 1 second's worth of tokens (avoids tiny initial stalls)
+        self._capacity: float = burst_size if burst_size is not None else self._rate_per_second
+        self._tokens: float = self._capacity
+        self._last_refill: float = time.monotonic()
+        self._lock = threading.Lock()
+
+    def _refill(self) -> None:
+        now = time.monotonic()
+        elapsed = now - self._last_refill
+        self._tokens = min(self._capacity, self._tokens + elapsed * self._rate_per_second)
+        self._last_refill = now
+
+    def acquire(self) -> None:
+        """Block until a token is available, then consume it."""
+        while True:
+            with self._lock:
+                self._refill()
+                if self._tokens >= 1.0:
+                    self._tokens -= 1.0
+                    return
+                # Calculate how long until the next token arrives.
+                wait = (1.0 - self._tokens) / self._rate_per_second
+
+            time.sleep(wait)
 
 
 def calculate_content_digest(text: str) -> str:

@@ -5,6 +5,7 @@ import logging
 import time
 import re
 import hashlib
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -17,6 +18,7 @@ from src.ingestion.ingestion_utils import (
     CONTENT_SHA256_METADATA_KEY,
     DatasetPageCache,
     SkipMarkerCache,
+    TokenBucketRateLimiter,
     calculate_content_digest,
 )
 
@@ -26,6 +28,25 @@ load_dotenv()
 # Configuration for logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Default window (in months) after which a monthly federal-transfers dataset
+# is treated as frozen. Any `completed` month whose end is older than this is
+# trusted without a live CGU probe. Override with TRANSPARENCY_FROZEN_MONTHS_BACK.
+DEFAULT_FROZEN_MONTHS_BACK = 6
+
+# Default thread-pool size for the bulk S3 metadata prefetch at ingestion start.
+# Override with TRANSPARENCY_METADATA_PREFETCH_WORKERS.
+DEFAULT_METADATA_PREFETCH_WORKERS = 16
+
+# Default number of parallel month-workers. At ~0.35 req/sec per worker this
+# gives ~2.8 req/sec (168 req/min) with 8 workers — comfortable under CGU's
+# 300 req/min cap. Override with TRANSPARENCY_MAX_WORKERS.
+DEFAULT_MAX_WORKERS = 8
+
+# Default aggregate CGU request cap enforced by the token-bucket limiter.
+# Set below the hard CGU limit (300/min) to leave room for retries and bursts.
+# Override with TRANSPARENCY_REQUESTS_PER_MINUTE.
+DEFAULT_REQUESTS_PER_MINUTE = 280
 
 class TransparencyIngestor:
     def __init__(self, bucket_name, config_path):
@@ -48,6 +69,16 @@ class TransparencyIngestor:
         self.rate_limit_delay = self.config.get('rate_limit', {}).get('delay_between_requests', 3.5)
         self.max_pages = self.config.get('pagination', {}).get('max_pages', 1000)
         self.page_size = self.config.get('pagination', {}).get('page_size', 500)
+
+        try:
+            _rpm = float(os.getenv("TRANSPARENCY_REQUESTS_PER_MINUTE", "").strip() or DEFAULT_REQUESTS_PER_MINUTE)
+        except ValueError:
+            _rpm = DEFAULT_REQUESTS_PER_MINUTE
+        self._rate_limiter = TokenBucketRateLimiter(requests_per_minute=_rpm)
+        logger.info(
+            "🚦 Rate limiter initialised: %.0f req/min (TRANSPARENCY_REQUESTS_PER_MINUTE)",
+            _rpm,
+        )
         
         # Shared HTTP client with retry logic
         # Note: Session not required - API redirects to error page when data unavailable
@@ -281,6 +312,135 @@ class TransparencyIngestor:
             else:
                 current = datetime(current.year, current.month + 1, 1)
 
+    def _frozen_months_back(self) -> int:
+        """
+        Months-back cutoff for treating a monthly dataset as historically frozen.
+
+        Any month whose `mesAnoFim` is older than `today - N months` (with N read
+        from TRANSPARENCY_FROZEN_MONTHS_BACK, default 6) is considered immutable:
+        CGU does not backfill federal-transfer rows that far into the past, so
+        trusting an existing `completed` checkpoint is safe and saves one live
+        API round-trip per frozen month (~2s each).
+
+        Set TRANSPARENCY_FROZEN_MONTHS_BACK=0 to disable the optimization and
+        restore the original probe-every-month behavior.
+        """
+        raw = os.getenv("TRANSPARENCY_FROZEN_MONTHS_BACK", "").strip()
+        if not raw:
+            return DEFAULT_FROZEN_MONTHS_BACK
+        try:
+            value = int(raw)
+        except ValueError:
+            logger.warning(
+                "⚠️ Invalid TRANSPARENCY_FROZEN_MONTHS_BACK=%r, falling back to default %d",
+                raw,
+                DEFAULT_FROZEN_MONTHS_BACK,
+            )
+            return DEFAULT_FROZEN_MONTHS_BACK
+        return max(0, value)
+
+    def _is_month_historical(
+        self,
+        base_params: dict,
+        *,
+        now: Optional[datetime] = None,
+    ) -> bool:
+        """Return True when the dataset's `mesAnoFim` is older than the frozen cutoff."""
+        if self._force_refresh_enabled():
+            return False
+
+        months_back = self._frozen_months_back()
+        if months_back <= 0:
+            return False
+
+        mes_ano_fim = (base_params or {}).get("mesAnoFim")
+        if not mes_ano_fim:
+            return False
+
+        try:
+            end_dt = self._parse_mes_ano(mes_ano_fim)
+        except (ValueError, TypeError):
+            return False
+
+        today = now or datetime.utcnow()
+        # Month-of-end vs. month-of-today, compared in absolute month units.
+        end_months = end_dt.year * 12 + end_dt.month
+        today_months = today.year * 12 + today.month
+        return (today_months - end_months) >= months_back
+
+    def _prefetch_metadata_index(
+        self,
+        prefix: str = "bronze/transparency/.metadata/",
+    ) -> dict:
+        """
+        Bulk-load every Transparency metadata checkpoint into an in-memory dict.
+
+        Replaces N scattered `GetObject` calls (one per dataset) with one
+        `ListObjectsV2` scan + a parallel fan-out of `GetObject`s. For a full
+        2010-2022 federal-transfers run that's ~156 objects fetched in ~1-2s
+        instead of 5-15s serial.
+
+        Returns:
+            Dict keyed by S3 object key -> parsed metadata JSON. Unreadable or
+            malformed objects are silently omitted (the caller falls back to a
+            live fetch, matching the pre-prefetch behavior).
+        """
+        results: dict[str, dict] = {}
+        try:
+            paginator = self.s3.get_paginator("list_objects_v2")
+            keys: list[str] = []
+            for page in paginator.paginate(Bucket=self.bucket, Prefix=prefix):
+                for obj in page.get("Contents", []) or []:
+                    key = obj.get("Key")
+                    if key and key.endswith(".meta.json"):
+                        keys.append(key)
+        except ClientError as exc:
+            logger.warning(
+                "⚠️ Metadata prefetch list failed (%s). Falling back to per-dataset fetches.",
+                exc,
+            )
+            return results
+
+        if not keys:
+            return results
+
+        try:
+            requested_workers = int(
+                os.getenv(
+                    "TRANSPARENCY_METADATA_PREFETCH_WORKERS",
+                    str(DEFAULT_METADATA_PREFETCH_WORKERS),
+                )
+            )
+        except ValueError:
+            requested_workers = DEFAULT_METADATA_PREFETCH_WORKERS
+        workers = max(1, min(requested_workers, len(keys)))
+
+        def fetch_one(key: str):
+            try:
+                resp = self.s3.get_object(Bucket=self.bucket, Key=key)
+                payload = json.loads(resp["Body"].read().decode("utf-8"))
+                return key, payload
+            except (ClientError, ValueError, json.JSONDecodeError) as exc:
+                logger.debug("metadata prefetch miss for %s: %s", key, exc)
+                return key, None
+
+        logger.info(
+            "📚 Prefetching %d Transparency metadata checkpoint(s) with %d worker(s)...",
+            len(keys), workers,
+        )
+        with ThreadPoolExecutor(
+            max_workers=workers,
+            thread_name_prefix="transparency-meta",
+        ) as pool:
+            for key, meta in pool.map(fetch_one, keys):
+                if meta is not None:
+                    results[key] = meta
+        logger.info(
+            "📚 Metadata prefetch complete: %d/%d checkpoint(s) cached in memory.",
+            len(results), len(keys),
+        )
+        return results
+
     def _normalize_endpoint(self, endpoint: str) -> str:
         return str(endpoint or "").strip().lstrip("/")
 
@@ -366,12 +526,13 @@ class TransparencyIngestor:
 
     def fetch_with_retry(self, url, params):
         """Fetches data from Transparency API using shared HTTP client."""
+        self._rate_limiter.acquire()
         headers = {}
         if self.api_key:
             headers["chave-api-dados"] = self.api_key
             # Note: Swagger UI only uses chave-api-dados header, not Authorization Bearer
             # Removing Authorization header to match Swagger's working curl command
-        
+
         return self.http_client.fetch(
             url,
             params=params,
@@ -387,10 +548,21 @@ class TransparencyIngestor:
         with open(self.source_log, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] Dataset: {name}\nURL: {url}\nParams: {param_str}\n{'-'*50}\n")
 
-    def _run_single_ingestion(self, name, url, base_params, filename, requires_pagination):
+    def _run_single_ingestion(
+        self,
+        name,
+        url,
+        base_params,
+        filename,
+        requires_pagination,
+        prefetched_metadata: Optional[dict] = None,
+    ):
         """
         Run ingestion for a single dataset.
-        
+
+        :param prefetched_metadata: Optional dict {s3_key -> metadata} from
+            :meth:`_prefetch_metadata_index`. When provided, avoids a per-dataset
+            S3 GetObject round-trip. Pass None to use the original fallback.
         :return: True if successful, False if failed
         """
         s3_key = f"bronze/transparency/{filename}"
@@ -400,7 +572,10 @@ class TransparencyIngestor:
             logger.info(f"⏭️ Skipping {name} - recently skipped (local cache).")
             return True
 
-        existing_metadata = self._get_metadata(metadata_key)
+        if prefetched_metadata is not None and metadata_key in prefetched_metadata:
+            existing_metadata = prefetched_metadata[metadata_key]
+        else:
+            existing_metadata = self._get_metadata(metadata_key)
         if self._should_skip_checkpointed_dataset(name, existing_metadata):
             return True
 
@@ -413,6 +588,29 @@ class TransparencyIngestor:
 
         if existing_metadata and existing_metadata.get('status') == 'completed':
             last_page = existing_metadata.get('last_page', 0)
+
+            # Fast-fast path: historical (frozen) months are skipped without a live
+            # CGU probe. Saves one ~1-3s round-trip per month on every re-run.
+            if self._is_month_historical(base_params):
+                logger.info(
+                    "❄️ %s is historical (mesAnoFim=%s, cutoff=%d months). "
+                    "Trusting completed checkpoint (%d pages); skipping CGU probe.",
+                    name,
+                    base_params.get("mesAnoFim"),
+                    self._frozen_months_back(),
+                    last_page,
+                )
+                self.skip_cache.set(s3_key, "skipped_up_to_date")
+                with open(self.source_log, 'a', encoding='utf-8') as log:
+                    log.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Dataset: {name}\n")
+                    log.write(f"URL: {url}\n")
+                    log.write(f"Params: {json.dumps(base_params)}\n")
+                    log.write("Status: SKIPPED (frozen historical month, no probe)\n")
+                    log.write(f"Pages: {last_page}\n")
+                    log.write(f"Records: {existing_metadata.get('total_records', 'unknown')}\n")
+                    log.write("-" * 50 + "\n")
+                return True
+
             logger.info(f"📋 Found existing metadata: {last_page} pages previously fetched")
             logger.info(f"🔍 Checking for new pages beyond page {last_page}...")
 
@@ -458,6 +656,7 @@ class TransparencyIngestor:
 
         page = start_page
         pages_processed_this_attempt = 0
+        _prev_page_hash: Optional[str] = None
         while True:
             current_params = base_params.copy()
             current_params['pagina'] = page
@@ -519,6 +718,29 @@ class TransparencyIngestor:
             else:
                 page_payload = [data_chunk]
                 total_records += 1
+
+            # Detect API loop: CGU returns the same page content indefinitely for
+            # some historical endpoints instead of an empty page. Stop pagination
+            # when the current page hash matches the previous page hash.
+            _cur_page_hash = hashlib.sha256(
+                json.dumps(page_payload, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+            if _prev_page_hash is not None and _cur_page_hash == _prev_page_hash:
+                logger.warning(
+                    "🔁 Duplicate page content detected at page %s for %s "
+                    "(API loop — CGU repeating same response). "
+                    "Treating as end of pagination.",
+                    page,
+                    name,
+                )
+                # Roll back the duplicate page: don't count it as new data.
+                if isinstance(data_chunk, list):
+                    total_records -= len(data_chunk)
+                else:
+                    total_records -= 1
+                page -= 1
+                break
+            _prev_page_hash = _cur_page_hash
 
             page_cache.write_page(page, page_payload)
             metadata = {
@@ -648,7 +870,12 @@ class TransparencyIngestor:
         
         # Track failed datasets for retry
         failed_datasets = []
-        
+
+        # Bulk prefetch every Transparency metadata checkpoint in one S3 list +
+        # parallel GETs. Turns the 156x serial S3 round-trips in the fast path
+        # into one bulk fetch and in-memory dict lookups.
+        prefetched_metadata = self._prefetch_metadata_index()
+
         # First round: process all datasets
         logger.info("=" * 60)
         logger.info("🔄 ROUND 1: Initial ingestion attempt")
@@ -667,29 +894,69 @@ class TransparencyIngestor:
             requires_pagination = ds.get('requires_pagination', False)
 
             if self._should_expand_months(endpoint, base_params):
-                for month_ds in self._expand_monthly_datasets(ds, base_params):
-                    logger.info(f"🚀 Processing {month_ds['name']}...")
-                    logger.info(f"🔗 Source URL: {url}")
+                month_dss = list(self._expand_monthly_datasets(ds, base_params))
 
-                    success = self._run_single_ingestion(
-                        month_ds["name"],
-                        url,
-                        month_ds["params"],
-                        month_ds["filename"],
-                        month_ds["requires_pagination"],
+                try:
+                    requested_workers = int(os.getenv("TRANSPARENCY_MAX_WORKERS", str(DEFAULT_MAX_WORKERS)))
+                except ValueError:
+                    requested_workers = DEFAULT_MAX_WORKERS
+                max_workers = max(1, min(requested_workers, len(month_dss)))
+
+                if max_workers > 1 and len(month_dss) > 1:
+                    logger.info(
+                        "🧵 Processing %d monthly datasets for %s with %d parallel workers "
+                        "(TRANSPARENCY_MAX_WORKERS=%d)",
+                        len(month_dss), base_name, max_workers, requested_workers,
                     )
-
-                    if not success:
-                        failed_datasets.append(month_ds)
+                    logger.info(f"🔗 Source URL: {url}")
+                    with ThreadPoolExecutor(
+                        max_workers=max_workers,
+                        thread_name_prefix="transparency",
+                    ) as pool:
+                        futures = {
+                            pool.submit(
+                                self._run_single_ingestion,
+                                m["name"], url, m["params"],
+                                m["filename"], m["requires_pagination"],
+                                prefetched_metadata,
+                            ): m
+                            for m in month_dss
+                        }
+                        for fut in as_completed(futures):
+                            m = futures[fut]
+                            try:
+                                success = fut.result()
+                            except Exception as exc:
+                                logger.error(f"❌ Worker for {m['name']} raised: {exc}")
+                                success = False
+                            if not success:
+                                failed_datasets.append(m)
+                else:
+                    for month_ds in month_dss:
+                        logger.info(f"🚀 Processing {month_ds['name']}...")
+                        logger.info(f"🔗 Source URL: {url}")
+                        success = self._run_single_ingestion(
+                            month_ds["name"],
+                            url,
+                            month_ds["params"],
+                            month_ds["filename"],
+                            month_ds["requires_pagination"],
+                            prefetched_metadata,
+                        )
+                        if not success:
+                            failed_datasets.append(month_ds)
             else:
                 logger.info(f"🚀 Processing {base_name}...")
                 logger.info(f"🔗 Source URL: {url}")
-                
-                success = self._run_single_ingestion(base_name, url, base_params, filename, requires_pagination)
-                
+
+                success = self._run_single_ingestion(
+                    base_name, url, base_params, filename, requires_pagination,
+                    prefetched_metadata,
+                )
+
                 if not success:
                     failed_datasets.append(ds)
-        
+
         # Retry rounds for failed datasets
         retry_round = 2
         while failed_datasets and retry_round <= max_retry_rounds:
@@ -697,10 +964,13 @@ class TransparencyIngestor:
             logger.info("=" * 60)
             logger.info(f"🔄 ROUND {retry_round}: Retrying {len(failed_datasets)} failed dataset(s)")
             logger.info("=" * 60)
-            
+
             current_failed = failed_datasets.copy()
             failed_datasets = []
-            
+
+            # Retry rounds skip the prefetched index on purpose: by now some
+            # checkpoints may have been written by the first round, and a live
+            # S3 GetObject reflects the freshest state for the (small) retry set.
             for ds in current_failed:
                 base_name = ds['name']
                 endpoint = self._normalize_endpoint(ds['endpoint'])
@@ -713,12 +983,12 @@ class TransparencyIngestor:
 
                 logger.info(f"🔁 Retrying {base_name}...")
                 logger.info(f"🔗 Source URL: {url}")
-                
+
                 success = self._run_single_ingestion(base_name, url, base_params, filename, requires_pagination)
-                
+
                 if not success:
                     failed_datasets.append(ds)
-            
+
             retry_round += 1
         
         # Final summary

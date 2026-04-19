@@ -217,8 +217,13 @@ class HTTPClient:
                     return None
                 
                 if response.status_code == 429:
-                    wait_time = 2 ** (attempt + 2)
-                    logger.warning(f"⏳ Rate limit hit (429). Retrying in {wait_time}s...")
+                    # Honor Retry-After if the server provides it; otherwise cap exponential backoff at 60s.
+                    retry_after = response.headers.get("Retry-After", "")
+                    try:
+                        wait_time = float(retry_after) if retry_after else min(2 ** (attempt + 2), 60)
+                    except ValueError:
+                        wait_time = min(2 ** (attempt + 2), 60)
+                    logger.warning(f"⏳ Rate limit hit (429). Retrying in {wait_time:.1f}s...")
                     time.sleep(wait_time)
                     continue
                 
@@ -268,7 +273,8 @@ class HTTPClient:
                 logger.error(f"   Response preview: {response.text[:200] if response else 'N/A'}")
                 return None
             except Exception as e:
-                wait_time = 2 ** (attempt + 1)
+                # Cap exponential backoff at 30s to prevent multi-minute stalls on transient errors.
+                wait_time = min(2 ** (attempt + 1), 30)
                 logger.warning(f"⚠️ Attempt {attempt+1}/{self.max_retries} failed. Retrying in {wait_time}s... Error: {e}")
                 time.sleep(wait_time)
         

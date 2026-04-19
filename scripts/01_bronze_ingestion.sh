@@ -31,7 +31,7 @@
 #   --skip-transparency  Skip Transparency ingestion
 #
 # Environment Variables:
-#   STORAGE_MODE         local-only, s3-only, or both (default: s3-only)
+#   STORAGE_MODE         local-only, s3-only, or both (default: local-only)
 #   LOCAL_DATA_DIR       Base directory for local storage
 #   S3_BUCKET_NAME       S3 bucket name
 #   AWS_PROFILE          AWS credentials profile
@@ -147,7 +147,7 @@ if [ -f ".env" ]; then
 fi
 
 # Check storage mode
-STORAGE_MODE="${STORAGE_MODE:-s3-only}"
+STORAGE_MODE="${STORAGE_MODE:-local-only}"
 echo "Storage Mode: ${STORAGE_MODE}"
 
 read_runtime_value() {
@@ -243,6 +243,67 @@ else
 fi
 echo "============================================================"
 echo ""
+
+# ---------------------------------------------------------------------------
+# Pre-ingestion sync: bidirectional S3 <-> local (mode=both, data on both sides)
+# ---------------------------------------------------------------------------
+if [ "${STORAGE_MODE}" = "both" ]; then
+    LOCAL_DATA_DIR="${LOCAL_DATA_DIR:-$REPO_ROOT/data}"
+    LOCAL_BRONZE_DIR="${LOCAL_DATA_DIR}/bronze"
+    S3_BRONZE_URI="s3://${S3_BUCKET_NAME}/bronze"
+
+    # Detect data presence on each side
+    LOCAL_HAS_DATA=false
+    if [ -d "${LOCAL_BRONZE_DIR}" ] && [ -n "$(ls -A "${LOCAL_BRONZE_DIR}" 2>/dev/null)" ]; then
+        LOCAL_HAS_DATA=true
+    fi
+
+    S3_HAS_DATA=false
+    if aws s3 ls "${S3_BRONZE_URI}/" --summarize 2>/dev/null | grep -q "Total Objects"; then
+        S3_OBJECT_COUNT=$(aws s3 ls "${S3_BRONZE_URI}/" --recursive --summarize 2>/dev/null | grep "Total Objects" | awk '{print $3}')
+        if [ "${S3_OBJECT_COUNT:-0}" -gt 0 ]; then
+            S3_HAS_DATA=true
+        fi
+    fi
+
+    if [ "${LOCAL_HAS_DATA}" = true ] && [ "${S3_HAS_DATA}" = true ]; then
+        echo "============================================================"
+        echo "🔄 Pre-ingestion Sync: Local ↔ S3 Bronze"
+        echo "   Both sides have data — merging before ingestion."
+        echo "============================================================"
+
+        echo ""
+        echo "  [1/2] Local → S3 (upload files missing or smaller on S3)..."
+        if aws s3 sync "${LOCAL_BRONZE_DIR}/" "${S3_BRONZE_URI}/" --size-only; then
+            echo -e "${GREEN}  ✓ Local → S3 sync complete${NC}"
+        else
+            echo -e "${RED}  ❌ Local → S3 sync failed. Aborting to avoid data loss.${NC}"
+            exit 1
+        fi
+
+        echo ""
+        echo "  [2/2] S3 → Local (download files missing or smaller locally)..."
+        if aws s3 sync "${S3_BRONZE_URI}/" "${LOCAL_BRONZE_DIR}/" --size-only; then
+            echo -e "${GREEN}  ✓ S3 → Local sync complete${NC}"
+        else
+            echo -e "${RED}  ❌ S3 → Local sync failed. Aborting to avoid data loss.${NC}"
+            exit 1
+        fi
+
+        echo ""
+        echo -e "${GREEN}✅ Pre-ingestion sync complete. Proceeding with ingestion.${NC}"
+        echo ""
+    elif [ "${LOCAL_HAS_DATA}" = true ]; then
+        echo -e "${YELLOW}ℹ️  Only local data found — skipping pre-ingestion sync.${NC}"
+        echo ""
+    elif [ "${S3_HAS_DATA}" = true ]; then
+        echo -e "${YELLOW}ℹ️  Only S3 data found — skipping pre-ingestion sync.${NC}"
+        echo ""
+    else
+        echo -e "${YELLOW}ℹ️  No existing bronze data on either side — skipping pre-ingestion sync.${NC}"
+        echo ""
+    fi
+fi
 
 if [ "$SKIP_IBGE" = "1" ]; then
     skip_step "Bronze I - IBGE Ingestion"

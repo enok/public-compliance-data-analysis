@@ -4,6 +4,14 @@
 >
 > **Escopo dos dados**: 5.570 municípios, 27 estados, Censo 2010/2022, sanções do Portal da Transparência (CEIS, CNEP, CEPIM), renda ajustada pela inflação (IPCA, base BRL 2022)
 
+> **⚠️ Atualização de granularidade (revisão adotada para submissão da tese).** A granularidade analítica principal passa a ser o **município** (N = 5.570) em vez do estado (N = 27). Números-título abaixo que referenciam resultados com N = 27 (ex.: r = 0,74, R² = 0,835) refletem a análise estadual anterior e são mantidos para contraste. O re-processamento em nível municipal (notebooks 01 – 03) entrega os tamanhos de efeito estatisticamente honestos:
+>
+> - **Correlação bivariada renda ↔ sancoes_por_100k (nível municipal): r ≈ 0,15** (p < 0,001, N = 5.570) — o r = 0,74 observado na granularidade estadual era um artefato de agregação com N pequeno.
+> - **OLS com log_renda + alfabetização + log_populacao + região + log_total_transferencias (nível municipal): R² ≈ 0,026, R² ajustado ≈ 0,025, F = 18,5, p(F) < 10⁻²⁷.** O modelo é conjuntamente significativo, mas explica apenas ~2,5% da variância municipal em sancoes_por_100k.
+> - **Classificação ("tem ao menos uma sanção", divisão 22 / 78): Regressão Logística balanceada com ROC-AUC ≈ 0,83 e F1 ≈ 0,57** — o alvo *binário* "esse município alguma vez apareceu em CEIS / CNEP / CEPIM?" é muito mais aprendível do que a taxa contínua.
+> - **Ressalva de qualidade de dados.** Das 27.749 sanções brutas em Silver, apenas 7.773 (28 %) têm `municipality_code` (CEPIM: 0 % geocodificado, CEIS: 34 %, CNEP: 4 %). O dataset estadual preserva mais sanções (22.717) porque os registros federais armazenam o estado de forma confiável, mas nem sempre o município. Os achados em nível municipal são, portanto, conservadores quanto à taxa da classe positiva.
+> - **Mudança de interpretação.** O antigo título "renda prediz fortemente sanções per capita" vira "a renda mostra associação positiva *fraca* em nível municipal (r ≈ 0,15), e *se* um município tem alguma sanção é bem mais previsível do que *quantas* tem". A narrativa de capacidade de detecção (§ 1.2) continua válida, mas agora sobre evidência desagregada e não sobre o agregado de 27 estados.
+
 ## 1. Resumo das Descobertas
 
 Este estudo investigou a relação entre indicadores socioeconômicos e sanções de compliance público em estados e municípios brasileiros. Quatro abordagens analíticas complementares foram aplicadas: análise exploratória de dados, inferência estatística, aprendizado de máquina supervisionado e clustering não supervisionado. Juntas, convergem em um conjunto consistente de achados.
