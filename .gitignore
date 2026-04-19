@@ -283,3 +283,23 @@ Thumbs.db
 .setup
 .setup/
 docs/jira
+
+# LLM local files (keep local, do not commit)
+AGENTS.md
+CLAUDE.md
+
+# LLM Tooling (local-only, do not commit)
+.windsurf/
+.cursor/
+.agents/
+.claude/
+.codex/
+.setup/
+rubrics/
+.cursorignore
+.cursorindexingignore
+
+# LLM toolkit scripts (local-only, do not commit)
+scripts/setup-llm-symlinks.sh
+scripts/sync-llm-configs.sh
+scripts/sync-llm-configs.ps1
