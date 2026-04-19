@@ -270,18 +270,7 @@ node_modules/
 .DS_Store
 desktop.ini
 Thumbs.db
-.agents
-.agents/
-.windsurf
-.windsurf/
-.cursor
-.cursor/
-.claude
-.claude/
-.codex
-.codex/
-.setup
-.setup/
+# (Legacy entries removed; LLM Tooling block below is the canonical set with /-anchors.)
 docs/jira
 
 # LLM local files (keep local, do not commit)
@@ -296,18 +285,31 @@ infra/tfplan.*
 infra/.terraform/
 infra/.terraform.lock.hcl
 
-# LLM Tooling (local-only, do not commit)
-.windsurf/
-.cursor/
-.agents/
-.claude/
-.codex/
-.setup/
-rubrics/
-skills/
-workflows/
-.cursorignore
-.cursorindexingignore
+# Infra deployment logs (may contain AWS ARNs, account IDs, secrets output)
+logs/
+*.log
+
+# LLM Tooling — top-level junctions to llm-toolkit-project (do not commit).
+# IMPORTANT: anchor patterns with leading "/" so docs/llm/workflows/,
+# docs/llm/rules/, etc. are NOT matched. Without /, "workflows/" would
+# gitignore any workflows/ directory at any depth.
+/.windsurf/
+/.cursor/
+/.agents/
+/.claude/
+/.codex/
+/.setup/
+/rubrics/
+/skills/
+/workflows/
+/.cursorignore
+/.cursorindexingignore
+
+# All LLM tooling lives in sibling llm-toolkit-project/ and is linked via
+# junctions. NO LLM content is committed in this project.
+.github/copilot-instructions.md
+docs/llm/
+/docs/llm
 
 # LLM toolkit scripts (local-only, do not commit)
 scripts/setup-llm-symlinks.sh
