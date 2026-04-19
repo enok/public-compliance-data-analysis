@@ -1,6 +1,6 @@
 # STEP 3: GOLD LAYER - Analytics & Aggregations
 
-**Last Updated:** 2026-04-07 (UTC-03:00)  
+**Last Updated:** 2026-04-08 (UTC-03:00)  
 **Project:** Public Compliance Data Analysis (MBA Thesis)  
 **Primary Entrypoint:** `scripts/03_gold_transformation.sh`
 
@@ -15,7 +15,8 @@ Current Gold outputs:
 2. `gold/agg_state_summary`
 3. `gold/agg_sanctions_summary`
 4. `gold/analysis_compliance`
-5. `gold/consolidated_clustering`
+5. `gold/analysis_compliance_municipality`
+6. `gold/consolidated_clustering`
 
 All outputs include:
 - `data.parquet`
@@ -76,7 +77,17 @@ Core fields include:
 - sanctions targets (`n_sanctions`, registry breakdowns, `sanctions_per_100k`)
 - engineered features (`log_population`, `log_income`, regional dummies)
 
-### 5) `consolidated_clustering`
+### 5) `analysis_compliance_municipality`
+Municipality-level modeling dataset aligned with state-level `analysis_compliance`.
+
+Core fields include:
+- municipality/state/region keys
+- socioeconomic controls (`population_2022`, `literacy_rate_2022`, `avg_income_2022`, `avg_income_real_2022_2022_brl`)
+- sanctions targets (`n_sanctions`, registry breakdowns, `sanctions_per_100k`)
+- transfer controls (`total_transfers`, `n_transfer_records`, `avg_transfer_per_capita`)
+- engineered features (`log_population`, `log_income`, `log_total_transfers`, `sanctions_per_million_brl_transfers`)
+
+### 6) `consolidated_clustering`
 Municipality-level dataset for unsupervised analysis.
 
 Construction rules:
@@ -100,6 +111,7 @@ Primary methods:
 - `_transform_state_summary()`
 - `_transform_sanctions_summary()`
 - `_transform_analysis_compliance()`
+- `_transform_analysis_compliance_municipality()`
 - `_transform_clustering_dataset()`
 
 Schema contracts are validated against Gold schema entries in `config/silver_schemas.json`.
@@ -150,7 +162,7 @@ Gold reuses the same metadata-based skip strategy:
 
 - sanctions geolocation coverage is incomplete in source systems
 - census-derived outcome features remain limited to 2010 and 2022 comparisons
-- many modeling analyses remain state-level due sanctions localization limits
+- municipality-level sanctions remain limited by geolocation coverage in source sanctions records
 
 ---
 
@@ -161,7 +173,7 @@ pytest tests/processing/test_gold_transformer.py -v
 pytest tests/processing/ -v
 ```
 
-Current repository total: `117` collected tests (`pytest --collect-only -q tests`, 2026-04-07).
+Current repository total: `127` collected tests (`pytest --collect-only -q tests`, 2026-04-08).
 
 ---
 

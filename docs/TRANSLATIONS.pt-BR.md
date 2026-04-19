@@ -16,6 +16,7 @@ Arquivos principais:
 | `state_summary` | `resumo_estado` | Resumo por Estado |
 | `sanctions_summary` | `resumo_sancoes` | Resumo de Sanções |
 | `analysis_compliance` | `analise_compliance` | Análise de Compliance |
+| `analysis_compliance_municipality` | `analise_compliance_municipio` | Análise de Compliance Municipal |
 | `consolidated_clustering` | `clustering_consolidado` | Clustering Consolidado |
 
 ---

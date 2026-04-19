@@ -19,7 +19,7 @@ Portuguese version: [README.pt-BR.md](README.pt-BR.md)
 - Silver transformation: complete and operational (`scripts/02_silver_transformation.sh`)
 - Gold transformation: complete and operational (`scripts/03_gold_transformation.sh`)
 - Analysis notebooks (EN + pt-BR): available
-- Automated tests: `117` tests collected (`pytest --collect-only -q tests`, 2026-04-07)
+- Automated tests: `130` tests collected (`pytest --collect-only -q tests`, 2026-04-09)
 
 ## Research Frame
 
@@ -117,6 +117,7 @@ infra/       Terraform for S3-backed data lake foundation
 - `agg_state_summary`
 - `agg_sanctions_summary`
 - `analysis_compliance`
+- `analysis_compliance_municipality`
 - `consolidated_clustering`
 
 ## Documentation Map
@@ -124,6 +125,9 @@ infra/       Terraform for S3-backed data lake foundation
 - Bronze: [docs/01_BRONZE_LAYER.md](docs/01_BRONZE_LAYER.md) | [pt-BR](docs/01_BRONZE_LAYER.pt-BR.md)
 - Silver: [docs/02_SILVER_LAYER.md](docs/02_SILVER_LAYER.md) | [pt-BR](docs/02_SILVER_LAYER.pt-BR.md)
 - Gold: [docs/03_GOLD_LAYER.md](docs/03_GOLD_LAYER.md) | [pt-BR](docs/03_GOLD_LAYER.pt-BR.md)
+- City full analysis workflow: [docs/city_full_analysis_workflow.md](docs/city_full_analysis_workflow.md) | [pt-BR](docs/city_full_analysis_workflow.pt-BR.md)
+- City thesis addendum: [docs/city_thesis_conclusion_addendum.md](docs/city_thesis_conclusion_addendum.md) | [pt-BR](docs/city_thesis_conclusion_addendum.pt-BR.md)
+- Thesis presentation assets (QGIS + Power BI): [docs/thesis_presentation_assets.md](docs/thesis_presentation_assets.md) | [pt-BR](docs/thesis_presentation_assets.pt-BR.md)
 - Notebooks: [notebooks/README.md](notebooks/README.md) | [pt-BR](notebooks/README.pt-BR.md)
 - Tests: [tests/README.md](tests/README.md) | [pt-BR](tests/README.pt-BR.md)
 - Translations: [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md) | [pt-BR](docs/TRANSLATIONS.pt-BR.md)

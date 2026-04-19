@@ -1,6 +1,6 @@
 # ETAPA 3: CAMADA GOLD - Analytics e Agregações
 
-**Última Atualização:** 2026-04-07 (UTC-03:00)  
+**Última Atualização:** 2026-04-08 (UTC-03:00)  
 **Projeto:** Public Compliance Data Analysis (TCC MBA)  
 **Entrypoint Principal:** `scripts/03_gold_transformation.sh`
 
@@ -15,7 +15,8 @@ Saídas Gold atuais:
 2. `gold/agg_state_summary`
 3. `gold/agg_sanctions_summary`
 4. `gold/analysis_compliance`
-5. `gold/consolidated_clustering`
+5. `gold/analysis_compliance_municipality`
+6. `gold/consolidated_clustering`
 
 Todas as saídas incluem:
 - `data.parquet`
@@ -76,7 +77,17 @@ Campos principais:
 - targets de sanções (`n_sanctions`, quebra por registro, `sanctions_per_100k`)
 - features de engenharia (`log_population`, `log_income`, dummies regionais)
 
-### 5) `consolidated_clustering`
+### 5) `analysis_compliance_municipality`
+Dataset municipal para modelagem alinhado ao `analysis_compliance` estadual.
+
+Campos principais:
+- chaves de município/estado/região
+- controles socioeconômicos (`population_2022`, `literacy_rate_2022`, `avg_income_2022`, `avg_income_real_2022_2022_brl`)
+- targets de sanções (`n_sanctions`, quebra por registro, `sanctions_per_100k`)
+- controles de transferências (`total_transfers`, `n_transfer_records`, `avg_transfer_per_capita`)
+- features de engenharia (`log_population`, `log_income`, `log_total_transfers`, `sanctions_per_million_brl_transfers`)
+
+### 6) `consolidated_clustering`
 Dataset municipal para análise não supervisionada.
 
 Regras de construção:
@@ -100,6 +111,7 @@ Métodos principais:
 - `_transform_state_summary()`
 - `_transform_sanctions_summary()`
 - `_transform_analysis_compliance()`
+- `_transform_analysis_compliance_municipality()`
 - `_transform_clustering_dataset()`
 
 Os contratos de schema são validados contra entradas Gold em `config/silver_schemas.json`.
@@ -150,7 +162,7 @@ A Gold reutiliza a mesma estratégia de skip por metadata:
 
 - cobertura geográfica de sanções ainda é incompleta na fonte
 - features de desfecho censitário continuam restritas à comparação 2010 e 2022
-- parte das análises permanece em nível estadual por limitação de localização das sanções
+- cobertura municipal de sanções ainda depende da presença de `municipality_code` na fonte
 
 ---
 
@@ -161,7 +173,7 @@ pytest tests/processing/test_gold_transformer.py -v
 pytest tests/processing/ -v
 ```
 
-Total atual do repositório: `117` testes coletados (`pytest --collect-only -q tests`, 2026-04-07).
+Total atual do repositório: `127` testes coletados (`pytest --collect-only -q tests`, 2026-04-08).
 
 ---
 

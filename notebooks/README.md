@@ -20,6 +20,15 @@ Portuguese version: [README.pt-BR.md](README.pt-BR.md)
 4. `04_clustering_analysis.ipynb`
 - PCA and K-means using the consolidated municipality clustering dataset.
 
+### Notebook Organization Style
+
+The final notebooks keep the aula-inspired organization in a single canonical file per topic.
+
+Each notebook includes explicit sections for:
+- `# Packages`
+- `# Reproducibility` (`SEED = 42`)
+- dataset loading, analysis blocks, and summary
+
 ---
 
 ## Prerequisites
@@ -79,15 +88,52 @@ loader_pt = GoldDataLoaderPtBr(
 )
 ```
 
+City clustering and same-cluster city comparison:
+
+```python
+from src.analysis.city_clustering import (
+    build_same_cluster_peer_table,
+    cluster_cities,
+    compare_cities_in_same_cluster,
+)
+
+df_cluster = loader.load_dataset("consolidated_clustering")
+result = cluster_cities(df_cluster, n_clusters=None, min_k=2, max_k=10)
+df_clustered = result.clustered_df
+
+# Compare one target city against nearest peers in the same cluster
+city_peers = compare_cities_in_same_cluster(
+    df_clustered,
+    municipality_code="3550308",  # Sao Paulo
+    top_n=5,
+)
+
+# Build a full city-to-city peer table inside each cluster
+all_peers = build_same_cluster_peer_table(df_clustered, top_n=3)
+```
+
 ---
 
 ## Available Gold Dataset Keys
 
 - `analysis_compliance`
+- `analysis_compliance_municipality`
 - `municipality_socioeconomic`
 - `state_summary`
 - `sanctions_summary`
 - `consolidated_clustering`
+
+---
+
+## City Full Analysis Workflow
+
+To run a state-style complete municipal analysis (stats + ML + clustering peers + conclusion addendum):
+
+```bash
+python ../scripts/run_city_full_analysis.py
+```
+
+Artifacts are written by default to `docs/city_full_analysis/`.
 
 ---
 

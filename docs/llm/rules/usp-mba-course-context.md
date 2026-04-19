@@ -4,9 +4,12 @@ Use this rule when the task mentions the thesis, TCC, USP MBA classes, methodolo
 
 ## Working Reference
 
-- Start with `docs/llm/rules/course-material-grounding.md` when the task needs full course-corpus grounding.
-- Start with `docs/llm/references/usp-mba-course-map.md`.
+- Start with `docs/llm/rules/course-material-grounding.md` when the task needs full course-corpus grounding and the 12-day study roadmap.
+- Start with `docs/llm/references/usp-mba-course-map.md` for the curated course-to-repository mapping.
 - Use `docs/llm/references/usp-mba-course-inventory.generated.md` only when you need deeper traceability to the source class materials.
+- Use `.agents/skills/research-thesis-support/SKILL.md` for chapter structure guidance and evidence-artifact patterns.
+- Use `docs/llm/workflows/tcc-method-selection.md` for choosing analytical methods grounded in course content.
+- Use `docs/llm/workflows/tcc-analysis-and-writing-sync.md` for keeping analysis and writing aligned.
 
 ## Context For This Repository
 
