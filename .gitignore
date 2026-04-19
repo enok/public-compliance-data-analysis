@@ -310,6 +310,8 @@ logs/
 .github/copilot-instructions.md
 docs/llm/
 /docs/llm
+docs/llm-toolkit-learnings/
+/docs/llm-toolkit-learnings
 
 # LLM toolkit scripts (local-only, do not commit)
 scripts/setup-llm-symlinks.sh
