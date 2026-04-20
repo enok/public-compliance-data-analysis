@@ -219,18 +219,40 @@ def translate_dataset_name(dataset_name: str, display: bool = False) -> str:
 def translate_dataframe_columns(df, display: bool = False):
     """
     Translate all column names in a DataFrame to Portuguese.
-    
+
+    Handles suffixed derivative columns transparently (e.g., `population_2022_norm`
+    becomes `populacao_2022_norm`) by applying the base-name translation to any
+    column whose prefix matches a known translation key.
+
     Args:
         df: pandas DataFrame
         display: If True, use display names; if False, use code-friendly names
-        
+
     Returns:
         DataFrame with translated column names
     """
-    import pandas as pd
-    
     translation_dict = DISPLAY_NAME_TRANSLATIONS if display else COLUMN_TRANSLATIONS
-    return df.rename(columns=translation_dict)
+
+    # Recognised derivative suffixes (keep in-order so longer matches win).
+    derivative_suffixes = ('_norm', '_log', '_std', '_z')
+
+    # Sort base keys by length desc so longer prefixes match first (e.g.
+    # `avg_income_real_2022_2022_brl_norm` matches before `avg_income`).
+    base_keys_sorted = sorted(translation_dict.keys(), key=len, reverse=True)
+
+    extended_dict = dict(translation_dict)
+    for col in df.columns:
+        if col in extended_dict:
+            continue
+        for suffix in derivative_suffixes:
+            if not col.endswith(suffix):
+                continue
+            base = col[: -len(suffix)]
+            if base in translation_dict:
+                extended_dict[col] = translation_dict[base] + suffix
+                break
+
+    return df.rename(columns=extended_dict)
 
 
 def get_translation_summary() -> str:

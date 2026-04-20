@@ -57,11 +57,14 @@ class LocalGoldDataLoader:
         file_path = self.project_root / rel_path
         
         if not file_path.exists():
-            logger.error(f"Dataset file not found: {file_path}")
+            rel_display = Path(rel_path).as_posix()
+            logger.error(f"Dataset file not found: {rel_display}")
             return None
         
         try:
-            logger.info(f"Loading {dataset_name} from {file_path}")
+            # Show relative path for cleaner output
+            rel_display = Path(rel_path).as_posix()
+            logger.info(f"Loading {dataset_name} from {rel_display}")
             # Use pandas read_parquet with numpy_nullable backend to avoid Arrow-backed
             # extension types that cause "pandas.period already defined" errors when
             # loading multiple parquet files in the same session
