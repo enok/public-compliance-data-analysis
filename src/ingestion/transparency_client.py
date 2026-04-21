@@ -179,7 +179,7 @@ class TransparencyIngestor:
         """
         import json
         
-        # Try AWS Secrets Manager first (for MWAA/production)
+        # Try AWS Secrets Manager first (for AWS-based runs)
         try:
             secrets_client = self.session.client('secretsmanager')
             secret_name = f"mba-thesis/transparency-api-key-{os.getenv('ENVIRONMENT', 'dev')}"

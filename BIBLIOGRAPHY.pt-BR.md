@@ -266,39 +266,32 @@
     - Provisionamento de recursos AWS
     - Gerenciamento de estado e colaboração
 
-### Orquestração de Workflows
-38. **Apache Airflow Documentation. (2024).** *Apache Airflow.*  
-    Disponível em: https://airflow.apache.org/
-    - Padrões de design de DAG (Directed Acyclic Graph)
-    - Agendamento de tarefas e dependências
-    - AWS MWAA (Managed Workflows for Apache Airflow)
-
 ---
 
 ## 7. Metodologia de Pesquisa & Ética
 
 ### Métodos de Pesquisa Quantitativa
-39. **Creswell, J. W., & Creswell, J. D. (2017).** *Research Design: Qualitative, Quantitative, and Mixed Methods Approaches* (5th ed.). SAGE Publications.  
+38. **Creswell, J. W., & Creswell, J. D. (2017).** *Research Design: Qualitative, Quantitative, and Mixed Methods Approaches* (5th ed.). SAGE Publications.  
     ISBN: 978-1506386706
     - Frameworks de design de pesquisa
     - Estratégias de análise de dados quantitativos
     - Considerações de validade e confiabilidade
 
-40. **Hair, J. F., Black, W. C., Babin, B. J., & Anderson, R. E. (2018).** *Multivariate Data Analysis* (8th ed.). Cengage Learning.  
+39. **Hair, J. F., Black, W. C., Babin, B. J., & Anderson, R. E. (2018).** *Multivariate Data Analysis* (8th ed.). Cengage Learning.  
     ISBN: 978-1473756540
     - Técnicas estatísticas multivariadas
     - Análise fatorial e modelagem de equações estruturais
     - Análise de cluster e análise discriminante
 
 ### Ética de Dados & Privacidade
-41. **Floridi, L., & Taddeo, M. (2016).** *What is Data Ethics?*  
+40. **Floridi, L., & Taddeo, M. (2016).** *What is Data Ethics?*  
     Philosophical Transactions of the Royal Society A, 374(2083), 20160360.  
     DOI: 10.1098/rsta.2016.0360
     - Frameworks éticos para ciência de dados
     - Privacidade, transparência e accountability
     - Uso responsável de dados em pesquisa
 
-42. **Brasil. (2018).** *Lei Geral de Proteção de Dados (LGPD) - Lei nº 13.709/2018.*  
+41. **Brasil. (2018).** *Lei Geral de Proteção de Dados (LGPD) - Lei nº 13.709/2018.*  
     Disponível em: http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm
     - Regulamentações brasileiras de proteção de dados
     - Princípios de processamento de dados pessoais
@@ -308,13 +301,13 @@
 
 ## 8. Análise Geoespacial
 
-43. **Bivand, R. S., Pebesma, E., & Gómez-Rubio, V. (2013).** *Applied Spatial Data Analysis with R* (2nd ed.). Springer.  
+42. **Bivand, R. S., Pebesma, E., & Gómez-Rubio, V. (2013).** *Applied Spatial Data Analysis with R* (2nd ed.). Springer.  
     ISBN: 978-1461476177
     - Estruturas e operações de dados espaciais
     - Análise de autocorrelação espacial
     - Métodos geoestatísticos
 
-44. **Anselin, L. (1988).** *Spatial Econometrics: Methods and Models.* Springer.  
+43. **Anselin, L. (1988).** *Spatial Econometrics: Methods and Models.* Springer.  
     ISBN: 978-9024737352
     - Modelos de regressão espacial
     - Dependência e heterogeneidade espacial
@@ -324,13 +317,13 @@
 
 ## 9. Pesquisa Reproduzível
 
-45. **Gandrud, C. (2020).** *Reproducible Research with R and RStudio* (3rd ed.). CRC Press.  
+44. **Gandrud, C. (2020).** *Reproducible Research with R and RStudio* (3rd ed.). CRC Press.  
     ISBN: 978-0367143985
     - Controle de versão com Git
     - Princípios de programação literária
     - Melhores práticas de documentação
 
-46. **Wickham, H., & Grolemund, G. (2017).** *R for Data Science: Import, Tidy, Transform, Visualize, and Model Data.* O'Reilly Media.  
+45. **Wickham, H., & Grolemund, G. (2017).** *R for Data Science: Import, Tidy, Transform, Visualize, and Model Data.* O'Reilly Media.  
     ISBN: 978-1491910399
     - Princípios de dados organizados (tidy data)
     - Workflows reproduzíveis
@@ -341,13 +334,13 @@
 ## 10. Aplicações Específicas do Domínio
 
 ### Analytics do Setor Público
-47. **Provost, F., & Fawcett, T. (2013).** *Data Science for Business: What You Need to Know about Data Mining and Data-Analytic Thinking.* O'Reilly Media.  
+46. **Provost, F., & Fawcett, T. (2013).** *Data Science for Business: What You Need to Know about Data Mining and Data-Analytic Thinking.* O'Reilly Media.  
     ISBN: 978-1449361327
     - Enquadramento de problemas de negócio
     - Frameworks de pensamento analítico
     - Considerações de implantação de modelos
 
-48. **Davenport, T. H., & Harris, J. G. (2017).** *Competing on Analytics: Updated, with a New Introduction: The New Science of Winning.* Harvard Business Review Press.  
+47. **Davenport, T. H., & Harris, J. G. (2017).** *Competing on Analytics: Updated, with a New Introduction: The New Science of Winning.* Harvard Business Review Press.  
     ISBN: 978-1633693722
     - Tomada de decisão orientada por analytics
     - Capacidades organizacionais para analytics

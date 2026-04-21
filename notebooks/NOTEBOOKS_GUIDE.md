@@ -21,7 +21,7 @@ The notebooks are organized in a logical sequence from data engineering to analy
 | 4 | `04_clustering_analysis.ipynb` | English | **Clustering**: K-means segmentation, PCA visualization |
 | 4 | `04_clustering_analysis.pt-BR.ipynb` | Portuguese | **Clusterização**: Segmentação K-means, visualização PCA |
 | 5 | `05_corruption_hdi_clusters.ipynb` | English | **Corruption vs HDI**: Cluster-stratified correlation analysis |
-| 5 | `05_corrupcao_idh_clusters.ipynb` | Portuguese | **Corrupção vs IDH**: Análise de correlação estratificada |
+| 5 | `05_corruption_hdi_clusters_pt-BR.ipynb` | Portuguese | **Corrupção vs IDH**: Análise de correlação estratificada |
 | 6 | `06_complete_thesis_pipeline.ipynb` | English | **Master Notebook**: Complete ETL + all analyses + QGIS + Dashboard |
 | 6 | `06_complete_thesis_pipeline.pt-BR.ipynb` | Portuguese | **Notebook Master**: ETL completo + todas análises + QGIS + Dashboard |
 

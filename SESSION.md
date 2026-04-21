@@ -208,7 +208,7 @@ Command:
 Relevant outcome:
 
 - no security findings in the checks that were executable in the current environment
-- some tools were skipped because network or Docker was unavailable
+- some tools were skipped because network was unavailable
 
 ### 7. Bronze expansion plan was added
 

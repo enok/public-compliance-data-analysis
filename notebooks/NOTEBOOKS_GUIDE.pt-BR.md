@@ -21,7 +21,7 @@ Os notebooks estão organizados em sequência lógica: engenharia de dados → a
 | 4 | `04_clustering_analysis.ipynb` | Inglês | **Clustering**: Segmentação K-means, visualização PCA |
 | 4 | `04_clustering_analysis.pt-BR.ipynb` | Português | **Clusterização**: Segmentação K-means, visualização PCA |
 | 5 | `05_corruption_hdi_clusters.ipynb` | Inglês | **Corrupção vs IDH**: Análise de correlação estratificada |
-| 5 | `05_corrupcao_idh_clusters.ipynb` | Português | **Corrupção vs IDH**: Análise de correlação estratificada |
+| 5 | `05_corruption_hdi_clusters_pt-BR.ipynb` | Português | **Corrupção vs IDH**: Análise de correlação estratificada |
 | 6 | `06_complete_thesis_pipeline.ipynb` | Inglês | **Notebook Master**: ETL + análises + QGIS + Dashboard |
 | 6 | `06_complete_thesis_pipeline.pt-BR.ipynb` | Português | **Notebook Master**: ETL completo + análises + QGIS + Dashboard |
 
@@ -59,7 +59,7 @@ Execute estes para análises focadas em tópicos específicos após o ETL estar 
 | 2 | `02_statistical_analysis.ipynb` | Correlação, regressão OLS, testes de hipótese |
 | 3 | `03_machine_learning.ipynb` | Modelos supervisionados e avaliação |
 | 4 | `04_clustering_analysis.ipynb` | Segmentação não-supervisionada, visualização PCA |
-| 5 | `05_corrupcao_idh_clusters.ipynb` | Proxy de corrupção vs IDH por cluster |
+| 5 | `05_corruption_hdi_clusters.ipynb` | Proxy de corrupção vs IDH por cluster |
 
 **Caso de Uso**: Use estes quando:
 - Já executou `00_etl_pipeline` e tem dados Gold prontos

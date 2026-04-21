@@ -72,10 +72,6 @@ can_resolve_host() {
   getent ahosts "$1" >/dev/null 2>&1
 }
 
-docker_usable() {
-  docker ps >/dev/null 2>&1
-}
-
 run_with_timeout() {
   local seconds="$1"
   shift
@@ -353,10 +349,8 @@ else
   skip_check "Secrets scan with gitleaks" "gitleaks is not installed"
 fi
 
-if have_command trufflehog && have_command docker && docker_usable; then
+if have_command trufflehog; then
   run_check "Secrets scan with trufflehog" run_trufflehog
-elif have_command trufflehog; then
-  skip_check "Secrets scan with trufflehog" "docker is not usable in the current environment"
 else
   skip_check "Secrets scan with trufflehog" "trufflehog is not installed"
 fi

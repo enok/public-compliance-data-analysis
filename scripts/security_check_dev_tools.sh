@@ -77,10 +77,6 @@ have_command() {
   command -v "$1" >/dev/null 2>&1
 }
 
-docker_usable() {
-  docker ps >/dev/null 2>&1
-}
-
 run_with_timeout() {
   local seconds="$1"
   shift
@@ -259,16 +255,6 @@ run_psscriptanalyzer() {
   done
 }
 
-run_hadolint() {
-  mapfile -d '' files < <(find "${TARGET_DIR}" -type f \( -name 'Dockerfile' -o -name '*.Dockerfile' \) -print0)
-
-  if [ "${#files[@]}" -eq 0 ]; then
-    return 0
-  fi
-
-  hadolint "${files[@]}"
-}
-
 run_cmd_semgrep() {
   local roots=()
   local candidate
@@ -371,10 +357,8 @@ else
   skip_check "Secrets scan with gitleaks" "gitleaks is not installed"
 fi
 
-if have_command trufflehog && have_command docker && docker_usable; then
+if have_command trufflehog; then
   run_check "Secrets scan with trufflehog" run_trufflehog
-elif have_command trufflehog; then
-  skip_check "Secrets scan with trufflehog" "docker is not usable in the current environment"
 else
   skip_check "Secrets scan with trufflehog" "trufflehog is not installed"
 fi
@@ -425,12 +409,6 @@ if have_command actionlint && [ -d "${TARGET_DIR}/.github/workflows" ]; then
   run_check "GitHub Actions lint with actionlint" actionlint
 else
   skip_check "GitHub Actions lint with actionlint" ".github/workflows missing or actionlint is not installed"
-fi
-
-if have_command hadolint && find "${TARGET_DIR}" -type f \( -name 'Dockerfile' -o -name '*.Dockerfile' \) -print -quit | grep -q .; then
-  run_check "Dockerfile lint with hadolint" run_hadolint
-else
-  skip_check "Dockerfile lint with hadolint" "no Dockerfiles found or hadolint is not installed"
 fi
 
 if have_command syft; then

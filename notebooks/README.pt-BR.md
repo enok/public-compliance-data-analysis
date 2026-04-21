@@ -8,17 +8,32 @@ Versão em inglês: [README.md](README.md)
 
 ## Notebooks
 
+0. `00_etl_pipeline.ipynb`
+- pipeline ponta a ponta Bronze → Silver → Gold.
+
 1. `01_exploratory_data_analysis.ipynb`
 - exploração dos datasets Gold, distribuições, missing e padrões regionais.
 
 2. `02_statistical_analysis.ipynb`
-- testes de correlação, testes de hipótese, diagnósticos OLS e interpretação.
+- testes de correlação, regressão OLS (Sudeste como categoria de
+  referência), testes de hipótese, diagnósticos e interpretação no
+  grão municipal.
 
 3. `03_machine_learning.ipynb`
-- baselines de regressão/classificação, validação cruzada e importância de features.
+- baselines de regressão/classificação, validação cruzada e importância
+  de features. Regressão Logística, Random Forest e Gradient Boosting
+  para classificação binária; ElasticNet para regressão contínua.
 
 4. `04_clustering_analysis.ipynb`
-- PCA e K-means usando o dataset consolidado de clustering municipal.
+- PCA e K-means (K=4, silhueta=0,288) usando o dataset consolidado de
+  clustering municipal.
+
+5. `05_corruption_hdi_clusters.ipynb`
+- correlação estratificada por cluster entre sanções por milhão de R$
+  transferido e indicadores de IDH/socioeconômicos.
+
+6. `06_complete_thesis_pipeline.ipynb`
+- notebook master: ETL completo + todas as análises + QGIS + dashboard.
 
 ### Estilo de Organização dos Notebooks
 

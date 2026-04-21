@@ -8,17 +8,31 @@ Portuguese version: [README.pt-BR.md](README.pt-BR.md)
 
 ## Notebooks
 
+0. `00_etl_pipeline.ipynb`
+- End-to-end Bronze → Silver → Gold pipeline walkthrough.
+
 1. `01_exploratory_data_analysis.ipynb`
 - Gold dataset exploration, distributions, missingness, regional patterns.
 
 2. `02_statistical_analysis.ipynb`
-- Correlation tests, hypothesis tests, OLS diagnostics, interpretation.
+- Correlation tests, OLS regression (Southeast as reference region),
+  hypothesis tests, diagnostics, interpretation at the municipality grain.
 
 3. `03_machine_learning.ipynb`
 - Regression/classification baselines, cross-validation, feature importance.
+  Logistic Regression, Random Forest, Gradient Boosting for binary
+  classification; ElasticNet for continuous regression.
 
 4. `04_clustering_analysis.ipynb`
-- PCA and K-means using the consolidated municipality clustering dataset.
+- PCA and K-means (K=4, silhouette=0.288) using the consolidated
+  municipality clustering dataset.
+
+5. `05_corruption_hdi_clusters.ipynb`
+- Cluster-stratified correlation between sanctions per BRL million
+  transferred and HDI/socioeconomic indicators.
+
+6. `06_complete_thesis_pipeline.ipynb`
+- Master notebook: full ETL + all analyses + QGIS + dashboard export.
 
 ### Notebook Organization Style
 
